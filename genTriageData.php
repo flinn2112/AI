@@ -1,8 +1,9 @@
 <?
-    define("__HYPOCHONDRIAC__", 0) ;
-    define("__AVERAGE_JOE__", 1) ;
+    define("__HYPOCHONDRIAC__", 5) ;
+    define("__AVERAGE_JOE__", 4) ;
     define("__NEEDY__", 2) ;
-    define("__URGENT__", 3) ;
+    define("__URGENT__", 1) ;
+    define("__LEVEL3__", 3) ;
     
     
     /*
@@ -516,48 +517,54 @@
         const HISTORY_OF_UNCONSCIOUSNESS        = "HISTORY_OF_UNCONSCIOUSNESS" ;
         const TEMPERATURE                       = "TEMPERATURE"; //hot, cold, warm
         const LOCAL_INFLAMATION                 = "LOCAL_INFLAMATION";
-        const RECENT                            = "RECENT_SYMPTOMS" ; //Beschwerden bestehen schon länger
+        const RECENT_PROBLEM                    = "RECENT_PROBLEM" ; //Beschwerden bestehen schon länger
         const RECENT_MILD_PAIN_OR_ITCH          = "RECENT_MILD_PAIN_OR_ITCH"; //on/off
         const VERY_LOW_SAO2                     = "VERY_LOW_SAO2";
         const DEFORMITY                         = "DEFORMITY";        
         const SWELLING                          = "SWELLING";
         const RECENT_MILD_PAIN                  = "RECENT_MILD_PAIN";
+        const MODERATE_PAIN                     = "MODERATE_PAIN";
         const WARMTH                            = "WARMTH";
         const UNSTOPPABLE_MINOR_HAEMORRAGE      = "UNSTOPPABLE_MINOR_HAEMORRAGE";
-        private $m_rCritical = array( ) ; //alle kritischen Merkmale
-        private $m_rNeedy    = array( ) ; //Merkmale, für Level 2/3
+        private $m_rL1 = array( ) ; //alle kritischen Merkmale
+        private $m_rL3    = array( ) ; //Merkmale, für Level 2/3
+        private $m_rL4       = array( ) ; //Merkmale, für Level 2/3
         
         function __construct($DEBUG) {
             //$this->init() ;      
             $this->m_DEBUG = $DEBUG ;
-            array_push($this->m_rNeedy, self::FACIAL_OEDEMA) ;            
-            array_push($this->m_rNeedy, self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE) ;
-            array_push($this->m_rNeedy, self::UNABLE_TO_TALK_IN_SENTENCES) ;
-            array_push($this->m_rNeedy, self::PAIN) ;
-            array_push($this->m_rNeedy, self::ABNORMAL_PULSE) ;
-            array_push($this->m_rNeedy, self::LOW_SAO2) ;
-            array_push($this->m_rNeedy, self::WIDESPREAD_RASH) ;
-            array_push($this->m_rNeedy, self::UNRESPONSIVE_CHILD) ;
-            array_push($this->m_rNeedy, self::DEFORMITY) ;
-            array_push($this->m_rNeedy, self::SWELLING) ;
+            
+            array_push($this->m_rL4, self::DEFORMITY) ;            
+            array_push($this->m_rL4, self::SWELLING) ;            
+            array_push($this->m_rL4, self::RECENT_PROBLEM) ;
+            array_push($this->m_rL4, self::RECENT_MILD_PAIN_OR_ITCH) ;
+            array_push($this->m_rL4, self::WARMTH) ;
+            array_push($this->m_rL4, self::LOCAL_INFLAMATION) ;
+            array_push($this->m_rL4, self::MODERATE_PAIN) ;
+            
+            array_push($this->m_rL3, self::FACIAL_OEDEMA) ;            
+            array_push($this->m_rL3, self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE) ;
+            array_push($this->m_rL3, self::UNABLE_TO_TALK_IN_SENTENCES) ;
+            array_push($this->m_rL3, self::PAIN) ;
+            array_push($this->m_rL3, self::ABNORMAL_PULSE) ;
+            array_push($this->m_rL3, self::LOW_SAO2) ;
+            array_push($this->m_rL3, self::WIDESPREAD_RASH) ;
             
             
-            array_push($this->m_rCritical, self::HCC_UNCONSCIOUS) ;
-            array_push($this->m_rCritical, self::AIRWAY_COMPROMISE) ;
-            array_push($this->m_rCritical, self::VERY_HOT_ADULT) ;
-            array_push($this->m_rCritical, self::STRIDOR) ;
-            array_push($this->m_rCritical, self::HYPOGLYCAEMIA) ;
-            array_push($this->m_rCritical, self::EXSANGUATING_HAEMORRHAGE) ;
-            array_push($this->m_rCritical, self::INADEQUATE_BREATHING) ;
-            array_push($this->m_rCritical, self::CURRENTLY_FITTING) ;
-            array_push($this->m_rCritical, self::UNRESPONSIVE_CHILD) ;
-            array_push($this->m_rCritical, self::SHOCK) ;
-            array_push($this->m_rCritical, self::SIGNIFICANT_MECHANISM_OF_INJURY) ;
-            //erst mal nicht: array_push($this->m_rCritical, self::TEMPERATURE) ;
-            
-     
             
             
+            array_push($this->m_rL1, self::HCC_UNCONSCIOUS) ;
+            array_push($this->m_rL1, self::AIRWAY_COMPROMISE) ;
+            array_push($this->m_rL1, self::VERY_HOT_ADULT) ;
+            array_push($this->m_rL1, self::STRIDOR) ;
+            array_push($this->m_rL1, self::HYPOGLYCAEMIA) ;
+            array_push($this->m_rL1, self::EXSANGUATING_HAEMORRHAGE) ;
+            array_push($this->m_rL1, self::INADEQUATE_BREATHING) ;
+            array_push($this->m_rL1, self::CURRENTLY_FITTING) ;
+            array_push($this->m_rL1, self::UNRESPONSIVE_CHILD) ;
+            array_push($this->m_rL1, self::SHOCK) ;
+            array_push($this->m_rL1, self::SIGNIFICANT_MECHANISM_OF_INJURY) ;
+            //erst mal nicht: array_push($this->m_rL1, self::TEMPERATURE) ;
         }
         
         private function init(){
@@ -565,6 +572,18 @@
             $this->m_oT = new MTS_TEMPERATURE_VALUES() ;
             $this->m_oP = new MTS_PAIN_VALUES() ;
         }
+        
+        /*
+         * 1.9.2.21
+         * Clear a level
+         */
+        private function clearLevel($rKeys, &$rTargetArray){
+            foreach($rKeys as $key){
+                    $rTargetArray[$key] = self::OFF ;
+                    printf("CLEARED %s VALUE IS NOW: %d<br>", $key, $rTargetArray[$key]) ;
+            }
+        }
+        
         /*
          * Dinge, die sich gegenseitig ausschliessen:
          * HOT_CHILD <-> VERY_HOT_ADULT
@@ -587,9 +606,10 @@
                ){
                     $rRow[self::VERY_HOT_ADULT] = self::OFF ;
                 }    
+            //PAIN und MILD PAIN schliessen sich aus.
             if( self::ON == $rRow[self::RECENT_MILD_PAIN_OR_ITCH] && 
                     ( 
-                        $rRow[self::PAIN] > 1  
+                        self::ON ==  $rRow[self::PAIN]   
                     )
                ){
                     $rRow[self::RECENT_MILD_PAIN_OR_ITCH] = self::OFF ;
@@ -661,10 +681,10 @@
             
             $rRow[self::WARMTH]                             = mt_rand(1, 2);
             $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2); //ist L4
-            $rRow[self::RECENT]                             = mt_rand(1, 2);
+            $rRow[self::RECENT_PROBLEM]                     = mt_rand(1, 2);
             $rRow[self::RECENT_MILD_PAIN_OR_ITCH]           = mt_rand(1, 2);
             $rRow[self::UNSTOPPABLE_MINOR_HAEMORRAGE]       = mt_rand(1, 2);
-            $rRow[self::MODERATE_PAIN           ]           = mt_rand(1, 2);
+            $rRow[self::MODERATE_PAIN]                      = mt_rand(1, 2);
             $rRow[self::DEFORMITY]                          = mt_rand(1, 2);
             $rRow[self::SWELLING]                           = mt_rand(1, 2); 
             $rRow[self::WARMTH]                             = mt_rand(1, 2); 
@@ -686,8 +706,8 @@
                 //wenigstens eins von diesen muss dann gesetzt sein:
                 //kein Urgent generiert                
                 if( false == $this->isUrgent($rRow) ){
-                    $iIdx = mt_rand(0, count($this->m_rCritical) - 1); //so viele Merkmale machen Urgent aus
-                    $rRow[$this->m_rCritical[$iIdx]] = self::ON ;
+                    $iIdx = mt_rand(0, count($this->m_rL1) - 1); //so viele Merkmale machen Urgent aus
+                    $rRow[$this->m_rL1[$iIdx]] = self::ON ;
                 }
                 //aber auch: einige Merkmale schliessen sich gegenseitig aus:
                 //HOT_CHILD / HOT_ADULT
@@ -707,16 +727,22 @@
                 
                 if( self::ON == $rRow[self::HCC_UNCONSCIOUS] && self::ON == $rRow[self::UNABLE_TO_TALK_IN_SENTENCES] ){
                     $rRow[self::UNABLE_TO_TALK_IN_SENTENCES] = 1 ;
-                }                
+                }  
+                
+                //alle niedrigen Diskriminatoren werden auf OFF gesetzt
+                for($k=0;$k<sizeof($this->m_rL4);$k++){
+                    $this->m_rL4[$k] = self::OFF ;
+                }
+                
                 array_push($this->m_rData, $rRow) ;
             }            
             return $rRow ;
         }
         
-        /*
+        /* Level 3
          * Normal generieren, dann aber bestimmte Werte prüfen und ggf. hochsetzen
          */
-        public function genNeedy($nRows){            
+        public function genLevel3($nRows){            
             $iIdx = 0 ; //zum Würfeln.
             $i = 0 ;
             $k = 0 ;
@@ -727,17 +753,22 @@
         
             for($i=0;$i<$nRows;$i++){                
                 //von diesem werden die kritischen Merkmale auf OFF gesetzt,
-                //andere Temp, Schmerz usw. werden an die Grenze gehoben.                
-               
-                for($k=1; $k<sizeof($this->m_rNeedy); $k++){
-                    printf("<br>%d LEN Needy: %d", $i, sizeof($this->m_rNeedy)) ;
-                    $rRow[$this->m_rNeedy[k]] = self::OFF ;
-                }  
+                //andere Temp, Schmerz usw. werden an die Grenze gehoben.
+                /*
+                for($k=1; $k<sizeof($this->m_rL1); $k++){                    
+                    $rRow[$this->m_rL1[$k]] = self::OFF ;
+                } 
+                */
+                $this->clearLevel($this->m_rL1, $rRow) ;
+                print("<p style=\"color:white;background-color:green\">Cleared L1: </p><br>") ;
+                print_r($rRow) ;
+                print("Cleared L1: <br>") ;
                 
-                $iIdx = mt_rand(0, count($this->m_rNeedy) - 1); //so viele Merkmale machen Needy aus, eines nehmen wir.
-                $rRow[$this->m_rCritical[$iIdx]] = self::ON ;
+                $iIdx = mt_rand(0, count($this->m_rL3) - 1); //so viele Merkmale machen Needy aus, eines nehmen wir.
+                $rRow[$this->m_rL3[$iIdx]] = self::ON ;
                 array_push($this->m_rData, $rRow) ;
-            }            
+            }
+            
             return $rRow ;
         }
         
@@ -794,7 +825,7 @@
                 $rRow[self::TEMPERATURE]                        = MTS_TEMPERATURE_VALUES::getNormal();
                 
                 $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2);
-                $rRow[self::RECENT]                             = mt_rand(1, 2);
+                $rRow[self::RECENT_PROBLEM]                             = mt_rand(1, 2);
                 $rRow[self::DEFORMITY]                          = self::OFF ;
                 $rRow[self::SWELLING]                           = mt_rand(1, 2); 
             array_push($this->m_rData, $rRow) ;
@@ -841,7 +872,7 @@
             $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]                 = self::OFF ;
             $rRow[self::TEMPERATURE]                                = MTS_TEMPERATURE_VALUES::getNormal();                       
             $rRow[self::LOCAL_INFLAMATION]                          = self::OFF ;
-            $rRow[self::RECENT]                                     = self::ON;
+            $rRow[self::RECENT_PROBLEM]                                     = self::ON;
             $rRow[self::RECENT_MILD_PAIN_OR_ITCH]                   = self::ON;
             $rRow[self::DEFORMITY]                                  = self::OFF ;
             $rRow[self::SWELLING]                                   = self::OFF ;
@@ -854,8 +885,8 @@
          */
         public function isUrgent($rRow){
             if($this->m_DEBUG){                
-                for($i=0;$i<sizeof($this->m_rCritical);$i++){
-                    printf("[%s] = [%d]<br>", $this->m_rCritical[$i], $rRow[$this->m_rCritical[$i]]) ;
+                for($i=0;$i<sizeof($this->m_rL1);$i++){
+                    printf("[%s] = [%d]<br>", $this->m_rL1[$i], $rRow[$this->m_rL1[$i]]) ;
                 }
             }
             //printf("<b>TEMP HOT IS [%d]</b><br>", MTS_TEMPERATURE_VALUES::HOT) ;
@@ -933,9 +964,14 @@
          * nicht bewusslos, oder anderweitig schwere Erkrankung.
          */
         public function isLevel3($rRow){
-              return ( $rRow[self::HCC_UNCONSCIOUS] <= 1 || $rRow[self::AIRWAY_COMPROMISE] <= 1 || $rRow[self::VERY_HOT_ADULT] <= 1 ||
-                     $rRow[self::UNRESPONSIVE_CHILD] <= 1 || $rRow[self::SHOCK] <= 1 || $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] <= 1 ||
-                     $rRow[self::TEMPERATURE] < $m_T->HOT) ;        
+            $bRet = false ;
+              for($k=1; $k<sizeof($this->m_rL3); $k++){                    
+                    if( self::ON == $rRow[$this->m_rL3[$k]] ){
+                        $bRet = true ;
+                        break ;
+                    } 
+                }  
+            return $bRet ;
         }
         /* CLASS MTS
          * Keine der relevanten Merkmale vorhanden
@@ -996,8 +1032,8 @@
                     case( __AVERAGE_JOE__ ):
                         return $this->genAverageJoe($nRows) ;
                         break ;
-                    case( __NEEDY__ ): //so ungefähr level 3 und 4
-                        return $this->genNeedy($nRows) ;
+                    case( __LEVEL3__ ): //so ungefähr level 3 und 4
+                        return $this->genLevel3($nRows) ;
                         break ;
                     case( __URGENT__ ):
                         return $this->genUrgent($nRows) ;
@@ -1047,7 +1083,15 @@
                         printf("EINSTUFUNG %d zu %s ZEILE [%s]<br>", $this->m_rRow['EINSTUFUNG'], "LEVEL_2", __LINE__) ;
                     }
                     continue ;
-                }                
+                }  
+                
+                if($this->isLevel3($this->m_rRow)){                    
+                    $this->m_rRow['EINSTUFUNG'] = 3 ;
+                    if( $this->m_DEBUG ){
+                        printf("EINSTUFUNG %d zu %s ZEILE [%s]<br>", $this->m_rRow['EINSTUFUNG'], "LEVEL_3", __LINE__) ;
+                    }
+                    continue ;
+                }  
                 
                 //wir brauchen die 3, 4 und 5 Kategorie
                 if($this->isAverageJoe($this->m_rRow)){                    
@@ -1164,7 +1208,7 @@
                         $this->m_rRow[self::HISTORY_OF_UNCONSCIOUSNESS]       ,
                         $this->m_rRow[self::TEMPERATURE]                      , 
                         $this->m_rRow[self::LOCAL_INFLAMATION]                ,                         
-                        $this->m_rRow[self::RECENT]                           ,
+                        $this->m_rRow[self::RECENT_PROBLEM]                           ,
                         $this->m_rRow[self::RECENT_MILD_PAIN_OR_ITCH]         ,
                         $this->m_rRow[self::DEFORMITY]                        ,//                        
                         $this->m_rRow[self::SWELLING]                         ,//40                       
@@ -1199,7 +1243,7 @@
         //$oGen->getRow() ;
         
         //$oGen->generateBatch($nRows / 10, __URGENT__) ;        //10%        
-        $oGen->generateBatch($nRows /  2, __AVERAGE_JOE__);   //50%
+        $oGen->generateBatch($nRows /  2, __LEVEL3__);   //50%
         //$oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__); //10%
         
         //  $oGen->generateBatch($nRows /  3, __NEEDY__) ;         //30%
