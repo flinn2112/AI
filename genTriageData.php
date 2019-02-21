@@ -505,7 +505,7 @@
         const OEDEMA_OF_THE_LONGUE              = "OEDEMA_OF THE_LONGUE";
         const UNABLE_TO_TALK_IN_SENTENCES       = "UNABLE_TO_TALK_IN_SENTENCES";
         const MARKED_TACHYCARDIA                = "MARKED_TACHYCARDIA";        
-        const SIGNIFICANT_INJURY                = "SIGNIFICANT_INJURY";
+        const SIGNIFICANT_MECHANISM_OF_INJURY                = "SIGNIFICANT_MECHANISM_OF_INJURY";
         const ABNORMAL_PULSE                    = "ABNORMAL_PULSE";
         const LOW_SAO2                          = "LOW_SAO2";
         const WIDESPREAD_RASH                   = "WIDESPREAD_RASH";
@@ -521,7 +521,9 @@
         const VERY_LOW_SAO2                     = "VERY_LOW_SAO2";
         const DEFORMITY                         = "DEFORMITY";        
         const SWELLING                          = "SWELLING";
-        
+        const RECENT_MILD_PAIN                  = "RECENT_MILD_PAIN";
+        const WARMTH                            = "WARMTH";
+        const UNSTOPPABLE_MINOR_HAEMORRAGE      = "UNSTOPPABLE_MINOR_HAEMORRAGE";
         private $m_rCritical = array( ) ; //alle kritischen Merkmale
         private $m_rNeedy    = array( ) ; //Merkmale, für Level 2/3
         
@@ -550,7 +552,7 @@
             array_push($this->m_rCritical, self::CURRENTLY_FITTING) ;
             array_push($this->m_rCritical, self::UNRESPONSIVE_CHILD) ;
             array_push($this->m_rCritical, self::SHOCK) ;
-            array_push($this->m_rCritical, self::SIGNIFICANT_INJURY) ;
+            array_push($this->m_rCritical, self::SIGNIFICANT_MECHANISM_OF_INJURY) ;
             //erst mal nicht: array_push($this->m_rCritical, self::TEMPERATURE) ;
             
      
@@ -640,7 +642,7 @@
             $rRow[self::OEDEMA_OF_THE_LONGUE]               = mt_rand(1, 2);
             $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]        = mt_rand(1, 2);
             $rRow[self::MARKED_TACHYCARDIA]                 = mt_rand(1, 2);
-            $rRow[self::SIGNIFICANT_INJURY]                 = mt_rand(1, 2);
+            $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]                 = mt_rand(1, 2);
             $rRow[self::ABNORMAL_PULSE]                     = mt_rand(1, 2);
             $rRow[self::VERY_LOW_SAO2]                      = mt_rand(1, 2);
             if( 2 == $rRow[self::VERY_LOW_SAO2] ){ //dann ist auch LOW true.
@@ -656,13 +658,16 @@
             $rRow[self::NEW_NEURO_DEFICIT]                  = mt_rand(1, 2);
             $rRow[self::FRACTURE]                           = mt_rand(1, 2);
             $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]         = mt_rand(1, 2);
-            $rRow[self::TEMPERATURE]                        = MTS_TEMPERATURE_VALUES::getRand();
-            $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2);
+            
+            $rRow[self::WARMTH]                             = mt_rand(1, 2);
+            $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2); //ist L4
             $rRow[self::RECENT]                             = mt_rand(1, 2);
             $rRow[self::RECENT_MILD_PAIN_OR_ITCH]           = mt_rand(1, 2);
-             
+            $rRow[self::UNSTOPPABLE_MINOR_HAEMORRAGE]       = mt_rand(1, 2);
+            $rRow[self::MODERATE_PAIN           ]           = mt_rand(1, 2);
             $rRow[self::DEFORMITY]                          = mt_rand(1, 2);
             $rRow[self::SWELLING]                           = mt_rand(1, 2); 
+            $rRow[self::WARMTH]                             = mt_rand(1, 2); 
             return $rRow ;
         }
         
@@ -738,7 +743,7 @@
         
         
         /* CLASS MTS Average Joe kann alles sein, wird aber hier so für Level 3 oder 4 generiert.
-         * 34 Einträge
+         * AvJoe sollte ein Level 3 oder 4 erzeugen
          * 1.0 2.0 2.0 1.0 1.0 2.0 1.0 1.0 1.0 2.0 
          * 2.0 3.0 2.0 2.0 1.0 2.0 2.0 1.0 2.0 2.0 
          * 1.0 1.0 2.0 2.0 2.0 2.0 2.0 1.0 1.0 2.0 
@@ -772,11 +777,12 @@
                 $rRow[self::ALTERED_CONSCIOUS_LEVEL]            = self::OFF ;
                 $rRow[self::HOT_CHILD]                          = self::OFF ;
                 $rRow[self::VERY_HOT_ADULT]                     = self::OFF ;
-                $rRow[self::FACIAL_OEDEMA]                      = mt_rand(1, 2);
-                $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]        = mt_rand(1, 2);
+                $rRow[self::OEDEMA_OF_THE_LONGUE]               = self::OFF ;
+                $rRow[self::FACIAL_OEDEMA]                      = self::OFF ;
+                $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]        = self::OFF ;
                 
                 $rRow[self::MARKED_TACHYCARDIA]                 = self::OFF ;
-                $rRow[self::SIGNIFICANT_INJURY]                 = self::OFF ;
+                $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]                 = self::OFF ;
                 $rRow[self::ABNORMAL_PULSE]                     = self::OFF ;
                 $rRow[self::LOW_SAO2]                           = self::OFF ;
                 $rRow[self::VERY_LOW_SAO2]                      = self::OFF ;
@@ -825,7 +831,7 @@
             $rRow[self::FACIAL_OEDEMA]                              = self::OFF ;
             $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]                = self::OFF ;
             $rRow[self::MARKED_TACHYCARDIA]                         = self::OFF ;
-            $rRow[self::SIGNIFICANT_INJURY]                         = self::OFF ;
+            $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]                         = self::OFF ;
             $rRow[self::ABNORMAL_PULSE]                             = self::OFF ;
             $rRow[self::LOW_SAO2] = $rRow[self::VERY_LOW_SAO2]      = self::OFF ;
             $rRow[self::WIDESPREAD_RASH]                            = self::OFF ;
@@ -863,7 +869,7 @@
                      $rRow[self::CURRENTLY_FITTING] > 1 ||
                      $rRow[self::UNRESPONSIVE_CHILD] > 1 
                     || $rRow[self::SHOCK] > 1 
-                    || $rRow[self::SIGNIFICANT_INJURY] >1 
+                    || $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] >1 
                     || $rRow[self::TEMPERATURE] > MTS_TEMPERATURE_VALUES::HOT
                     ) ;
             if($this->m_DEBUG){
@@ -883,7 +889,7 @@
                       $rRow[self::HYPOGLYCAEMIA] <= 1 ||
                      $rRow[self::UNRESPONSIVE_CHILD] <= 1 || 
                       $rRow[self::SHOCK] <= 1 || 
-                      $rRow[self::SIGNIFICANT_INJURY] <= 1 ||
+                      $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] <= 1 ||
                      $rRow[self::TEMPERATURE] < $m_T->HOT) ;        
         }
         
@@ -918,7 +924,7 @@
                       $rRow[self::OEDEMA_OF_THE_LONGUE] > 1 ||
                       $rRow[self::UNABLE_TO_TALK_IN_SENTENCES] > 1 ||
                       $rRow[self::MARKED_TACHYCARDIA] > 1 ||
-                      $rRow[self::SIGNIFICANT_INJURY] > 1 ||
+                      $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] > 1 ||
                       $rRow[self::ABNORMAL_PULSE] > 1 ||
                       $rRow[self::VERY_LOW_SAO2] > 1
                     ) ;        
@@ -928,19 +934,23 @@
          */
         public function isLevel3($rRow){
               return ( $rRow[self::HCC_UNCONSCIOUS] <= 1 || $rRow[self::AIRWAY_COMPROMISE] <= 1 || $rRow[self::VERY_HOT_ADULT] <= 1 ||
-                     $rRow[self::UNRESPONSIVE_CHILD] <= 1 || $rRow[self::SHOCK] <= 1 || $rRow[self::SIGNIFICANT_INJURY] <= 1 ||
+                     $rRow[self::UNRESPONSIVE_CHILD] <= 1 || $rRow[self::SHOCK] <= 1 || $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] <= 1 ||
                      $rRow[self::TEMPERATURE] < $m_T->HOT) ;        
         }
         /* CLASS MTS
          * Keine der relevanten Merkmale vorhanden
          */
         public function isLevel4($rRow){
+             if( $this->isHypoChondriac($rRow) ){
+                 //wenn die Person ein Level5 ist, dann bleibt er das.
+                 return false ;
+             }
               return ( $rRow[self::HCC_UNCONSCIOUS] <= 1 || 
                       $rRow[self::AIRWAY_COMPROMISE] <= 1 || 
                       $rRow[self::VERY_HOT_ADULT] <= 1 ||
                       $rRow[self::UNRESPONSIVE_CHILD] <= 1 || 
                       $rRow[self::SHOCK] <= 1 || 
-                      $rRow[self::SIGNIFICANT_INJURY] <= 1 ||
+                      $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] <= 1 ||
                       $rRow[self::TEMPERATURE] < $m_T->HOT) ;        
         }
         /*
@@ -948,14 +958,16 @@
          * und Wiederkehrer.
          */
         public function isLevel5($rRow){
-              return ( ($rRow[self::HCC_UNCONSCIOUS] <= 1 || 
-                      $rRow[self::AIRWAY_COMPROMISE] <= 1 || 
-                      $rRow[self::VERY_HOT_ADULT] <= 1 ||
-                     $rRow[self::UNRESPONSIVE_CHILD] <= 1 || 
-                      $rRow[self::SHOCK] <= 1 || 
-                      $rRow[self::SIGNIFICANT_INJURY] <= 1 ||
-                     $rRow[self::TEMPERATURE] < $m_T->HOT)
-                      && ( $rRow[self::RECENT_PAIN]  == 2)
+              return ( ($rRow[self::HCC_UNCONSCIOUS] <= self::OFF || 
+                      $rRow[self::AIRWAY_COMPROMISE] <= self::OFF || 
+                      $rRow[self::VERY_HOT_ADULT] <= self::OFF ||
+                      $rRow[self::UNRESPONSIVE_CHILD] <= self::OFF || 
+                      $rRow[self::SHOCK] <= self::OFF || 
+                      $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] <= self::OFF ||
+                      $rRow[self::TEMPERATURE] < $m_T->HOT)
+                      && ( $rRow[self::RECENT_PAIN] == self::ON
+                      && $rRow[RECENT_MILD_PAIN_OR_ITCH] == self::ON
+                      && $rRow[RECENT_MILD_PAIN_OR_ITCH] == self::ON)
                       
                       ) ;        
         }
@@ -1037,7 +1049,7 @@
                     continue ;
                 }                
                 
-                //wir brauchen die 4 und 5 Kategorie
+                //wir brauchen die 3, 4 und 5 Kategorie
                 if($this->isAverageJoe($this->m_rRow)){                    
                     $this->m_rRow['EINSTUFUNG'] = 3 ;
                     if( $this->m_DEBUG ){                        
@@ -1053,12 +1065,12 @@
                     }
                     continue ;
                 }
+                
                 if($this->isHypochondriac($this->m_rRow)){                    
                     $this->m_rRow['EINSTUFUNG'] = 5 ;
                     if( $this->m_DEBUG ){
                         printf("EINSTUFUNG %d zu %s ZEILE [%s]<br>", $this->m_rRow['EINSTUFUNG'], "HYPOCHONDER", __LINE__) ;
-                    } 
-                    
+                    }                     
                 }
                 
             }//foreach
@@ -1140,7 +1152,7 @@
                         $this->m_rRow[self::OEDEMA_OF_THE_LONGUE]             ,
                         $this->m_rRow[self::UNABLE_TO_TALK_IN_SENTENCES]      ,
                         $this->m_rRow[self::MARKED_TACHYCARDIA]               , 
-                        $this->m_rRow[self::SIGNIFICANT_INJURY]               ,
+                        $this->m_rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]               ,
                         $this->m_rRow[self::ABNORMAL_PULSE]                   ,
                         $this->m_rRow[self::LOW_SAO2]                         ,
                         $this->m_rRow[self::VERY_LOW_SAO2]                    ,
@@ -1186,9 +1198,9 @@
         
         //$oGen->getRow() ;
         
-        $oGen->generateBatch($nRows / 10, __URGENT__) ;        //10%        
+        //$oGen->generateBatch($nRows / 10, __URGENT__) ;        //10%        
         $oGen->generateBatch($nRows /  2, __AVERAGE_JOE__);   //50%
-        $oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__); //10%
+        //$oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__); //10%
         
         //  $oGen->generateBatch($nRows /  3, __NEEDY__) ;         //30%
          
