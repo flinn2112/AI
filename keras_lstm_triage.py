@@ -10,9 +10,10 @@ import numpy as np
 from keras.models import Model
 from keras.layers import Input, Dense
 from keras.models import Sequential
-
-
-
+from keras.callbacks import ModelCheckpoint
+#'training.xp.csv'
+strTrainingFilename = 'training_data.csv'
+strTestFilename    = 'test_data.csv'
 
 def generate_arrays_from_file(path):
     while True:
@@ -44,10 +45,39 @@ def generate_arrays_from_file(path):
                 """zurückgeben: training array, result array"""
             f.close()                   
                 
-
+def async_get_for_prediction(path):
+    while True:
+        with open(path) as f:
+            for line in f:
+                rTest  = np.zeros((1, 44)) 
+                rResult = np.zeros((1, 5)) 
+                datas  = np.fromstring(line, dtype=float, sep=' ')                
+                rTest[0] = datas[0:44]
+                rResult[0] = datas[44:]     
+                print('---TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
+                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+                yield(rTest, rResult)
+                """zurückgeben: training array, result array"""
+            f.close()   
+            
+            
+def async_get_for_evaluation(path):
+    while True:
+        with open(path) as f:
+            for line in f:
+                rTest  = np.zeros((1, 44)) 
+                rResult = np.zeros((1, 5)) 
+                datas  = np.fromstring(line, dtype=float, sep=' ')                
+                rTest[0] = datas[0:44]
+                rResult[0] = datas[44:]   
+                print('---TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
+                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+                yield(rTest, rResult)
+                """zurückgeben: training array, result array"""
+            f.close()               
 
 model = Sequential()
-model.add(Dense(11, input_dim=44, activation='relu'))
+model.add(Dense(12, input_dim=44, activation='relu'))
 model.add(Dense(10, activation='relu'))
 #der Ergebnisvektor hat 5 elemente
 model.add(Dense(5, activation='sigmoid'))
@@ -56,12 +86,33 @@ model.add(Dense(5, activation='sigmoid'))
 sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
 
 #model.compile(sgd, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
-model.compile(loss='categorical_crossentropy', optimizer='adadelta')
-model.fit_generator(generate_arrays_from_file('training.xp.csv'),
-                    steps_per_epoch=10000, epochs=10)
+#, optimizer='adadelta'
+model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy']) 
+
+filepath="lstm_weights.triage.hdf5"
+checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+callbacks_list = [checkpoint]
+
+model.fit_generator(generate_arrays_from_file(strTrainingFilename),
+                    steps_per_epoch=150, epochs=1000)
 
 
 
+
+# doc: predict_generator(generator, steps=None, callbacks=None, max_queue_size=10, workers=1, use_multiprocessing=False, verbose=0)
+predictions = model.predict_generator(async_get_for_prediction(strTestFilename), steps=5)
+print('First prediction:', predictions[0][0])
+
+# evaluate the model
+#evaluate_generator(generator, steps=None, callbacks=None, max_queue_size=10, workers=1, use_multiprocessing=False, verbose=0)
+scores = model.evaluate_generator(async_get_for_evaluation(strTestFilename), steps=5)
+#scores = model.evaluate_generator()
+
+print('Predicted INDEX: ', np.argmax(predictions[0]))
+
+#print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+print('XP Scores:', scores)
+model.save(filepath) 
 
 print('END')
 
