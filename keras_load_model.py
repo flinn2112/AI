@@ -13,36 +13,46 @@ from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
 import matplotlib.pyplot as plt
 import numpy
+import h5py
+#f. lstm
+#lstm_weights.triage.hdf5
+#fWeights = "weights.triage.hdf5"
+fWeights = "lstm_weights.triage.hdf5"
 # fix random seed for reproducibility
 seed = 7
 numpy.random.seed(seed)
+
+
+
 
 # load pima indians dataset
 dataset = numpy.loadtxt("test_data.csv", delimiter=' ')
 #result_dataset = numpy.loadtxt("test_result.csv", delimiter=' ')
 # split into input (X) and output (Y) variables
-X = dataset[:,0:24]
+X = dataset[:,0:44]
 print(X)
 #da hat noch keiner rausgefunden, wie dataset wirklich funktioniert -  aber so geht's anscheinend - letzte 5 Werte im Array sind die Resultate
-Y = dataset[:,24:10000] 
+Y = dataset[:,44:10000] 
 print('Y Result Data: ', Y)
 #sys.exit(1)
+
+# load weights
+model.load_weights(fWeights)
+
 # create model
 model = Sequential()
-model.add(Dense(12, input_dim=24, kernel_initializer='uniform', activation='relu'))
+model.add(Dense(12, input_dim=44, kernel_initializer='uniform', activation='relu'))
 #, activation='softmax'
 model.add(Dense(10, kernel_initializer='uniform', activation='relu')) 
 model.add(Dense(5, kernel_initializer='uniform', activation='sigmoid'))
-# load weights
-model.load_weights("weights.triage.hdf5")
+
 # Compile model (required to make predictions)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-print("Created model and loaded weights from file")
+print("Created model and loaded weights from file [", fWeights, "]")
 
 # estimate accuracy on whole dataset using loaded weights
-scores = model.evaluate(X, Y, verbose=0)
-
+scores = model.evaluate(X, Y, verbose=1)
 
 predictions = model.predict(X)
 print('--------------------------------------') 
@@ -53,18 +63,21 @@ iErrs  = 0
 diff   = 0  
 #zu dringlich eingeschätzt ist besser als zu schlecht - deshalb, wenn predict < result, dann ist das erstmal nicht schlimm
 for p in predictions:    
+    print("---    Index Training:",  numpy.nanargmax(Y[i]), "  ---   Index Vorhersage: ", numpy.argmax(p) )  
 #    """ wenn vorhersage ungleich trainingsresultat ist, dann fehler hochzaehlen """"
-    if  ( numpy.nanargmax(Y[i] != numpy.argmax(p)) ):        
+    diff = numpy.absolute(numpy.argmax(p) - numpy.nanargmax(Y[i]))
+    if( diff != 0 ):        
         #   um 2 zu schlecht abgeschätzt
-        diff = numpy.argmax(p) - numpy.nanargmax(Y[i])
-        if ( diff > 2 ): 
+        
+#       also der unterschied in der Indexposition. Die Schätzung hat einen Index, der um 2 von der Realität entfernt ist.        
+        
+        if ( diff > 1 ):   
             print("!Fail...", diff )  
             iFails = iFails + 1
-        
-        
-    
+        else:     
+            print("!Warning...", diff ) 
         print('[', i + 1, ']') 
-        print(X[i], '\nResult:', Y[i], ' <---> Prediction:', p, '\n')
+        print(X[i], '\nTraining:', Y[i], ' <---> Prediction:', p, '\n')
         print('Result:', numpy.nanargmax(Y[i]) + 1, ' <---> Prediction:', numpy.argmax(p) + 1, '\n')
         iErrs = iErrs + 1
         """

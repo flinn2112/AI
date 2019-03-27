@@ -24,10 +24,10 @@ dataset = np.loadtxt("training_data.csv", delimiter=" ")
 #result_dataset = np.loadtxt("training_result.csv", delimiter=" ")
 # split into input (X) and output (Y) variables
 #originalwert war 0:8
-X = dataset[:,0:24]
+X = dataset[:,0:44]
 print(X.shape) 
 #orginalwert war ,8
-Y = dataset[:,24:]
+Y = dataset[:,44:]
 print(X)
 print(Y)
 #sys.exit(1)
@@ -37,8 +37,9 @@ print(Y)
 # create model
 model = Sequential()
 #dim war im Beispiel 8
-model.add(Dense(12, input_dim=24, activation='relu'))
+model.add(Dense(12, input_dim=44, activation='relu'))
 model.add(Dense(10, activation='relu'))
+#der Ergebnisvektor hat 5 elemente
 model.add(Dense(5, activation='sigmoid'))
 
 #sgd = keras.optimizers.SGD(lr=0.01, clipvalue=0.5)
@@ -51,7 +52,8 @@ model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['ac
 
 
 
-# Fit the modelFfrank
+# Fit the model
+#der Pfad f. die resultierenden Gewichte
 filepath="weights.triage.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
@@ -66,7 +68,7 @@ model.fit(X, Y, validation_split=0.001, epochs=900, batch_size=500, callbacks=ca
 
 predictions = model.predict(X)
 print('First prediction:', predictions[0])
-
+print('Predicted INDEX: ', np.argmax(predictions[0]))
 # evaluate the model
 scores = model.evaluate(X, Y)
 

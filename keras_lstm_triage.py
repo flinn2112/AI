@@ -11,6 +11,7 @@ from keras.models import Model
 from keras.layers import Input, Dense
 from keras.models import Sequential
 from keras.callbacks import ModelCheckpoint
+import h5py
 #'training.xp.csv'
 strTrainingFilename = 'training_data.csv'
 strTestFilename    = 'test_data.csv'
@@ -83,7 +84,7 @@ model.add(Dense(10, activation='relu'))
 model.add(Dense(5, activation='sigmoid'))
 
 
-sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+#sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
 
 #model.compile(sgd, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
 #, optimizer='adadelta'
@@ -94,7 +95,8 @@ checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_o
 callbacks_list = [checkpoint]
 
 model.fit_generator(generate_arrays_from_file(strTrainingFilename),
-                    steps_per_epoch=150, epochs=1000)
+                    steps_per_epoch=150, epochs=5000
+                    )
 
 
 
@@ -112,7 +114,8 @@ print('Predicted INDEX: ', np.argmax(predictions[0]))
 
 #print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 print('XP Scores:', scores)
-model.save(filepath) 
+#model.save(filepath) 
+model.save_weights(filepath)
 
 print('END')
 
