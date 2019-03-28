@@ -1360,13 +1360,12 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
             }
             foreach($this->m_rL4 as $key){
                     $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
-            } 
-            
+            }            
             foreach($this->m_rCustom as $key){
                     $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
             }
             
-            $strOut = sprintf("%s,%s", $strData, $strResult) ;
+            $strOut = sprintf("%s,%s\n", $strData, $strResult) ;
 
         /*        
                 $strOut = sprintf( "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
