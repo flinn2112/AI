@@ -395,24 +395,24 @@
             foreach($this->m_rData as $this->m_rRow){
                 switch($this->m_rRow['EINSTUFUNG']){
                  case 1:
-                     $strResult = "1.0,0.0,0.0,0.0,0.0" ;
+                     $strResult = "0.9,0.1,0.0,0.0,0.0" ;
                      break ;
                  case 2:
-                     $strResult = "0.0,1.0,0.0,0.0,0.0" ;
+                     $strResult = "0.0,0.9,0.0,0.0,0.0" ;
                      break ;
                  case 3:
-                     $strResult = "0.0,0.0,1.0,0.0,0.0" ;
+                     $strResult = "0.0,0.0,0.9,0.0,0.0" ;
                      break ;
                  case 4:
-                     $strResult = "0.0,0.0,0.0,1.0,0.0" ;
+                     $strResult = "0.0,0.0,0.0,0.9,0.0" ;
                      
                      break ;
                  case 5:
-                     $strResult = "0.0,0.0,0.0,0.0,1.0" ;
+                     $strResult = "0.0,0.0,0.0,0.0,0.9" ;
                      
                      break ;
                  default:       
-                     $strResult = "0.0,0.0,0.0,0.0,1.0" ;
+                     $strResult = "0.0,0.0,0.0,0.0,0.9" ;
                      
                 }
                 
@@ -478,121 +478,131 @@
         private $m_oP ; //Pain Values
         private $m_oT ; //Temperature Values
         
-        const ON  = 2 ;
-        const OFF = 1 ;
+        const ON  = 0.02 ;
+        const OFF = 0.01 ;
         //Custom von hcc ausgedacht:
-        const HCC_GENDER                        = "HCC_GENDER";
-        const HCC_UNCONSCIOUS                   = "HCC_UNCONSCIOUS";
-        const HCC_DAYTIME                       = "HCC_DAYTIME"; //morgens, mittags ... 1-4
+        const HCC_GENDER                        = "HCC_GENDER" ;
+        const HCC_UNCONSCIOUS                   = "HCC_UNCONSCIOUS" ;
+        const HCC_DAYTIME                       = "HCC_DAYTIME" ; //morgens, mittags ... 1-4
         const HCC_RECURRING                     = 'HCC_RECURRING' ;
         const HCC_PRIVATE_INSURANCE             = 'HCC_PRIVATE_INSURANCE' ;
         const HCC_AGE                           = 'HCC_AGE' ;        
         const AIRWAY_COMPROMISE                 = "AIRWAY_COMPROMISE";//ab hier Standard MTS
         const INADEQUATE_BREATHING              = "INADEQUATE_BREATHING";
         const EXSANGUATING_HAEMORRHAGE          = "EXSANGUATING_HAEMORRHAGE";
-        const UNCONTROLLABLE_MAJOR_HAEMORRHAGE  = "UNCONTROLLABLE_MAJOR_HAEMORRHAGE";
+        const UNCONTROLLABLE_MAJOR_HAEMORRHAGE  = "UNCONTROLLABLE_MAJOR_HAEMORRHAGE";  //10     
         
         const SHOCK                             = "SHOCK";
         const CURRENTLY_FITTING                 = "CURRENT_FITTING";
         const UNRESPONSIVE_CHILD                = "UNRESPONSIVE_CHILD";
         const STRIDOR                           = "STRIDOR";
         const HYPOGLYCAEMIA                     = "HYPOGLYCAEMIA";
-        const PAIN                              = "PAIN";
-        const RECENT_PAIN                       = "RECENT_PAIN";
-        const ITCH                              = "ITCH" ;
-        const SEVERE_ITCH                       = "SEVERE_ITCH" ;
-        const SEVERE_PAIN                       = "SEVERE_PAIN" ;
         const ALTERED_CONSCIOUS_LEVEL           = "ALTERED_CONSCIOUS_LEVEL";
-        const HOT_ADULT                         = "HOT_ADULT";
+        const HOT_ADULT                         = "HOT_ADULT"; 
         const HOT_CHILD                         = "HOT_CHILD";
         const VERY_HOT_ADULT                    = "VERY_HOT_ADULT";
-        const FACIAL_OEDEMA                     = "FACIAL_OEDEMA";
+        const FACIAL_OEDEMA                     = "FACIAL_OEDEMA";//20
+        
         const OEDEMA_OF_THE_LONGUE              = "OEDEMA_OF THE_LONGUE";
         const UNABLE_TO_TALK_IN_SENTENCES       = "UNABLE_TO_TALK_IN_SENTENCES";
         const MARKED_TACHYCARDIA                = "MARKED_TACHYCARDIA";        
-        const SIGNIFICANT_MECHANISM_OF_INJURY   = "SIGNIFICANT_MECHANISM_OF_INJURY";
-        const ABNORMAL_PULSE                    = "ABNORMAL_PULSE";
+        const SIGNIFICANT_MECHANISM_OF_INJURY   = "SIGNIFICANT_MECHANISM_OF_INJURY";  
+        const ABNORMAL_PULSE                    = "ABNORMAL_PULSE";  
         const LOW_SAO2                          = "LOW_SAO2";
         const WIDESPREAD_RASH                   = "WIDESPREAD_RASH";
         const SIGNIFICANT_HISTORY_OF_ALLERGY    = "SIGNIFICANT_HISTORY_OF_ALLERGY" ;
-        const HISTORY_OF_ALLERGY                = "HISTORY_OF_ALLERGY";
-        const NEW_NEURONAL_DEFICIT              = "NEW_NEURONAL_DEFICIT";
-        const FRACTURE                          = "FRACTURE";   //OPEN
-        const HISTORY_OF_UNCONSCIOUSNESS        = "HISTORY_OF_UNCONSCIOUSNESS" ;
-        const TEMPERATURE                       = "TEMPERATURE"; //hot, cold, warm
-        const LOCAL_INFLAMATION                 = "LOCAL_INFLAMATION";
-        const RECENT_PROBLEM                    = "RECENT_PROBLEM" ; //Beschwerden bestehen schon länger
-        const RECENT_MILD_PAIN_OR_ITCH          = "RECENT_MILD_PAIN_OR_ITCH"; //on/off
-        const SEVERE_PAIN_OR_ITCH               = "SEVERE_PAIN_OR_ITCH"; //on/off
+        const HISTORY_OF_ALLERGY                = "HISTORY_OF_ALLERGY"; 
+//        const FRACTURE                          = "FRACTURE";   //OPEN         
+        const HISTORY_OF_UNCONSCIOUSNESS        = "HISTORY_OF_UNCONSCIOUSNESS" ;//30
+        
+        const LOCAL_INFLAMATION                 = "LOCAL_INFLAMATION";                   
+        const RECENT_PROBLEM                    = "RECENT_PROBLEM" ; //Beschwerden bestehen schon länger //40
+        const RECENT_MILD_PAIN_OR_ITCH          = "RECENT_MILD_PAIN_OR_ITCH"; //on/off  
+        const SEVERE_PAIN_OR_ITCH               = "SEVERE_PAIN_OR_ITCH"; //on/off  
         const VERY_LOW_SAO2                     = "VERY_LOW_SAO2";
         const DEFORMITY                         = "DEFORMITY";        
         const GROSS_DEFORMITY                   = "GROSS_DEFORMITY";  
         const OPEN_FRACTURE                     = "OPEN_FRACTURE";  
-        const SWELLING                          = "SWELLING";
-        const RECENT_MILD_PAIN                  = "RECENT_MILD_PAIN";
-        const MODERATE_PAIN                     = "MODERATE_PAIN";
-        const MODERATE_PAIN_OR_ITCH             = "MODERATE_PAIN_OR_ITCH";
-        const WARMTH                            = "WARMTH";
-        const COLD                              = "COLD";
-        const UNCONTROLLABLE_MINOR_HAEMORRAGE   = "UNCONTROLLABLE_MINOR_HAEMORRAGE";
-        const NEW_NEURO_DEFICIT                 = "NEW_NEURO_DEFICIT" ;
+        const SWELLING                          = "SWELLING"; 
+        const MODERATE_PAIN_OR_ITCH             = "MODERATE_PAIN_OR_ITCH";  //40
         
-        private $m_rL1 = array( ) ; //alle kritischen Merkmale
-        private $m_rL2 = array( ) ; //Merkmale, für Level 2
-        private $m_rL3 = array( ) ; //Merkmale, für Level 3
-        private $m_rL4 = array( ) ; //Merkmale, für Level 4
+        const WARMTH                            = "WARMTH";  
+        const COLD                              = "COLD"; 
+        const UNSTOPPABLE_MINOR_HAEMORRAGE      = "UNSTOPPABLE_MINOR_HAEMORRAGE";
+        const NEW_NEUROLOGICAL_DEFICIT          = "NEW_NEUROLOGICAL_DEFICIT" ;  //44
         
+        private $m_rL1 = array() ; //alle kritischen Merkmale
+        private $m_rL2 = array() ; //Merkmale, für Level 2
+        private $m_rL3 = array() ; //Merkmale, für Level 3
+        private $m_rL4 = array() ; //Merkmale, für Level 4
+        private $m_rL5 = array() ; //Merkmale, für Level 5
+        private $m_rCustom = array( ) ; //hcc::Merkmale
         function __construct($DEBUG) {
             //$this->init() ;      
             $this->m_DEBUG = $DEBUG ;
             
-            array_push($this->m_rL4, self::DEFORMITY) ;            
-            array_push($this->m_rL4, self::SWELLING) ;            
+   
+            
+                    
+            array_push($this->m_rL4, self::WARMTH) ;            
             array_push($this->m_rL4, self::RECENT_PROBLEM) ;
-            array_push($this->m_rL4, self::RECENT_MILD_PAIN_OR_ITCH) ;
-            array_push($this->m_rL4, self::RECENT_MILD_PAIN) ;          
-            array_push($this->m_rL4, self::WARMTH) ;
             array_push($this->m_rL4, self::LOCAL_INFLAMATION) ;
-
+            array_push($this->m_rL4, self::RECENT_MILD_PAIN_OR_ITCH) ;
+            array_push($this->m_rL4, self::DEFORMITY) ;          
+            array_push($this->m_rL4, self::SWELLING) ;  //6
+            
+            
+            
+            array_push($this->m_rL3, self::OPEN_FRACTURE) ;
             array_push($this->m_rL3, self::HISTORY_OF_UNCONSCIOUSNESS) ;
             array_push($this->m_rL3, self::HOT_ADULT) ;
-            array_push($this->m_rL3, self::UNCONTROLLABLE_MINOR_HAEMORRAGE) ;
-            array_push($this->m_rL3, self::OPEN_FRACTURE) ;
-            array_push($this->m_rL3, self::NEW_NEURONAL_DEFICIT) ;
-            array_push($this->m_rL3, self::HISTORY_OF_ALLERGY) ;
+            array_push($this->m_rL3, self::LOW_SAO2) ; //
+            array_push($this->m_rL3, self::NEW_NEUROLOGICAL_DEFICIT) ;
+            array_push($this->m_rL3, self::UNSTOPPABLE_MINOR_HAEMORRAGE) ;
+
             array_push($this->m_rL3, self::WIDESPREAD_RASH);
-            array_push($this->m_rL3, self::MODERATE_PAIN) ;
             array_push($this->m_rL3, self::MODERATE_PAIN_OR_ITCH) ;
             array_push($this->m_rL3, self::SIGNIFICANT_HISTORY_OF_ALLERGY) ;
-            array_push($this->m_rL3, self::GROSS_DEFORMITY) ;
-            array_push($this->m_rL3, self::LOW_SAO2) ;
-            print_r($this->m_rL3) ;
+            array_push($this->m_rL3, self::GROSS_DEFORMITY) ;                   //10 = 16
+        
+        //    print_r($this->m_rL3) ;
             
-            array_push($this->m_rL2, self::MARKED_TACHYCARDIA) ;    
-            array_push($this->m_rL2, self::SEVERE_PAIN) ;            
+            array_push($this->m_rL2, self::MARKED_TACHYCARDIA) ;           
             array_push($this->m_rL2, self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE) ;
             array_push($this->m_rL2, self::UNABLE_TO_TALK_IN_SENTENCES) ;
             array_push($this->m_rL2, self::SEVERE_PAIN_OR_ITCH) ;
             array_push($this->m_rL2, self::SIGNIFICANT_MECHANISM_OF_INJURY) ;
-            array_push($this->m_rL2, self::VERY_LOW_SAO2) ;            
+            array_push($this->m_rL2, self::COLD) ;            
             array_push($this->m_rL2, self::ABNORMAL_PULSE) ;
             array_push($this->m_rL2, self::ALTERED_CONSCIOUS_LEVEL) ;
             array_push($this->m_rL2, self::HOT_CHILD) ;
-            array_push($this->m_rL2, self::COLD) ;
+            array_push($this->m_rL2, self::VERY_LOW_SAO2) ;
             array_push($this->m_rL2, self::VERY_HOT_ADULT) ;
             array_push($this->m_rL2, self::FACIAL_OEDEMA) ;   
-            array_push($this->m_rL2, self::OEDEMA_OF_THE_LONGUE) ;
+            array_push($this->m_rL2, self::OEDEMA_OF_THE_LONGUE) ; //13 = 29
             
-            array_push($this->m_rL1, self::HCC_UNCONSCIOUS) ;
+            
             array_push($this->m_rL1, self::AIRWAY_COMPROMISE) ;
-            array_push($this->m_rL1, self::VERY_HOT_ADULT) ;
             array_push($this->m_rL1, self::STRIDOR) ;
             array_push($this->m_rL1, self::HYPOGLYCAEMIA) ;
             array_push($this->m_rL1, self::EXSANGUATING_HAEMORRHAGE) ;
             array_push($this->m_rL1, self::INADEQUATE_BREATHING) ;
             array_push($this->m_rL1, self::CURRENTLY_FITTING) ;
             array_push($this->m_rL1, self::UNRESPONSIVE_CHILD) ;
-            array_push($this->m_rL1, self::SHOCK) ;
+            array_push($this->m_rL1, self::SHOCK) ;                //8 = 37 -> 37 sind  im XLS(Google Docs)
+            
+            array_push($this->m_rCustom, self::HCC_GENDER);                      
+            array_push($this->m_rCustom, self::HCC_UNCONSCIOUS);                 
+            array_push($this->m_rCustom, self::HCC_DAYTIME);                     
+            array_push($this->m_rCustom, self::HCC_RECURRING);                   
+            array_push($this->m_rCustom, self::HCC_PRIVATE_INSURANCE);           
+            array_push($this->m_rCustom, self::HCC_AGE);         //6 = 43
+printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
+                        sizeof($this->m_rL2) +
+                        sizeof($this->m_rL3) +
+                        sizeof($this->m_rL4) +
+                        sizeof($this->m_rCustom)
+                        ) ;
 
             //erst mal nicht: array_push($this->m_rL1, self::TEMPERATURE) ;
         }
@@ -629,28 +639,64 @@
                ){
                     $rRow[self::UNCONSCIOUS] = self::OFF ;
                 }
+                
+            if( self::ON == $rRow[self::HOT_CHILD] || self::ON == $rRow[self::HOT_ADULT] 
+                    || self::ON == $rRow[self::VERY_HOT_ADULT]){
+                        $rRow[self::WARMTH] = self::OFF ;
+                        $rRow[self::COLD] = self::OFF ;
+            } 
+            
+            if( self::ON == $rRow[self::EXSANGUATING_HAEMORRHAGE] && 
+                    ( 
+                        self::ON == $rRow[self::UNSTOPPABLE_MINOR_HAEMORRAGE]  
+                    )
+                    
+               ){
+                    $rRow[self::UNSTOPPABLE_MINOR_HAEMORRAGE] = self::OFF ;
+                }  
+                
+                
             if( self::ON == $rRow[self::HOT_CHILD] && 
                     ( 
                         self::ON == $rRow[self::VERY_HOT_ADULT]  
                     )
+                    
                ){
                     $rRow[self::VERY_HOT_ADULT] = self::OFF ;
                 }    
+                
+            if( self::ON == $rRow[self::HOT_CHILD] && 
+                    ( 
+                        $rRow[self::HCC_AGE] > 13
+                    )
+               ){
+                    $rRow[self::HOT_CHILD] = self::OFF ;
+                    $rRow[self::HOT_ADULT] = self::ON ;
+                }     
+                
+            if( self::ON == $rRow[self::DEFORMITY] && 
+                    ( 
+                        self::ON == $rRow[self::GROSS_DEFORMITY] 
+                    )
+               ){
+                    $rRow[self::DEFORMITY] = self::OFF ;
+                }     
+                
             //PAIN und MILD PAIN schliessen sich aus.
             if( self::ON == $rRow[self::RECENT_MILD_PAIN_OR_ITCH] && 
                     ( 
-                        self::ON ==  $rRow[self::PAIN]   
+                        self::ON ==  $rRow[self::SEVERE_PAIN_OR_ITCH]   
                     )
                ){
                     $rRow[self::RECENT_MILD_PAIN_OR_ITCH] = self::OFF ;
                 } 
-                
-            if( self::ON == $rRow[self::RECENT_MILD_PAIN_OR_ITCH] && 
+            //warm und kalt geht nicht zusammen    
+            if( self::ON == $rRow[self::WARMTH] && 
                     ( 
-                        self::ON == $rRow[self::ITCH]  
+                        self::ON == $rRow[self::COLD]  
                     )
                ){
-                    $rRow[self::RECENT_MILD_PAIN_OR_ITCH] = self::OFF ;
+                    $rRow[self::COLD] = self::OFF ;
                 } 
                 
             if( self::ON == $rRow[self::RECENT_MILD_PAIN_OR_ITCH] && 
@@ -659,29 +705,30 @@
                     )
                ){
                     $rRow[self::RECENT_MILD_PAIN_OR_ITCH] = self::OFF ;
-                }        
+                }         
                 
         }
         
         public function genRandom(){
             $rRow = array() ;
-            $rRow[self::HCC_GENDER]                         = mt_rand(1, 2);
-            $rRow[self::HCC_UNCONSCIOUS]                    = mt_rand(1, 2);            
-            $rRow[self::HCC_PRIVATE_INSURANCE]              = mt_rand(1, 2);
-            $rRow[self::HCC_AGE              ]              = mt_rand(1, 110);
-            $rRow[self::HCC_DAYTIME    ]                    = mt_rand(1, 4);
+            $rRow[self::HCC_GENDER]                         = mt_rand(1, 2) / 100 ;
+            $rRow[self::HCC_UNCONSCIOUS]                    = mt_rand(1, 2) / 100;            
+            $rRow[self::HCC_PRIVATE_INSURANCE]              = mt_rand(1, 2) / 100;
+            $rRow[self::HCC_AGE              ]              = mt_rand(1, 110) / 100;
+            $rRow[self::HCC_RECURRING              ]        = mt_rand(1, 2) / 100;
+            $rRow[self::HCC_DAYTIME    ]                    = mt_rand(1, 4) / 100;
             
             foreach($this->m_rL1 as $key){
-                    $rRow[$key] = mt_rand(1, 2);
+                    $rRow[$key] = mt_rand(1, 2)/ 100;
             }
             foreach($this->m_rL2 as $key){
-                    $rRow[$key] = mt_rand(1, 2);
+                    $rRow[$key] = mt_rand(1, 2)/ 100;
             }
             foreach($this->m_rL3 as $key){
-                    $rRow[$key] = mt_rand(1, 2);
+                    $rRow[$key] = mt_rand(1, 2)/ 100;
             }
             foreach($this->m_rL4 as $key){
-                    $rRow[$key] = mt_rand(1, 2);
+                    $rRow[$key] = mt_rand(1, 2)/ 100;
             }
             
             
@@ -729,7 +776,7 @@
             $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2); //ist L4
             $rRow[self::RECENT_PROBLEM]                     = mt_rand(1, 2);
             $rRow[self::RECENT_MILD_PAIN_OR_ITCH]           = mt_rand(1, 2);
-            $rRow[self::UNCONTROLLABLE_MINOR_HAEMORRAGE]       = mt_rand(1, 2);
+            $rRow[self::UNSTOPPABLE_MINOR_HAEMORRAGE]       = mt_rand(1, 2);
             $rRow[self::MODERATE_PAIN]                      = mt_rand(1, 2);
             $rRow[self::DEFORMITY]                          = mt_rand(1, 2);
             $rRow[self::SWELLING]                           = mt_rand(1, 2); 
@@ -893,7 +940,7 @@
                 $this->clearLevel($this->m_rL3, $rRow) ;
                 $this->clearLevel($this->m_rL4, $rRow) ;
                 $rRow[self::HCC_UNCONSCIOUS]                    = self::OFF ; //nicht bewusstlos
-                $rRow[self::HCC_DAYTIME    ]                    = mt_rand(1, 2); //nur morgens, mittags
+                $rRow[self::HCC_DAYTIME    ]                    = mt_rand(1, 2) / 100; //nur morgens, mittags
                 $rRow[self::AIRWAY_COMPROMISE]                  = self::OFF ;
                 $rRow[self::INADEQUATE_BREATHING]               = self::OFF ; //mt_rand(1, 2);
                 $rRow[self::EXSANGUATING_HAEMORRHAGE]           = self::OFF ;
@@ -904,9 +951,6 @@
                 $rRow[self::STRIDOR]                            = self::OFF ; //mt_rand(1, 2);
                 
                 $rRow[self::HYPOGLYCAEMIA]                      = self::OFF ;
-                $rRow[self::PAIN]                               = MTS_PAIN_VALUES::getRand();
-                $rRow[self::RECENT_PAIN]                        = mt_rand(1, 2);
-                $rRow[self::ITCH]                               = mt_rand(1, 2);
                 $rRow[self::SEVERE_ITCH]                        = self::OFF ;
                 $rRow[self::ALTERED_CONSCIOUS_LEVEL]            = self::OFF ;
                 $rRow[self::HOT_CHILD]                          = self::OFF ;
@@ -920,17 +964,15 @@
                 $rRow[self::ABNORMAL_PULSE]                     = self::OFF ;
                 $rRow[self::LOW_SAO2]                           = self::OFF ;
                 $rRow[self::VERY_LOW_SAO2]                      = self::OFF ;
-                $rRow[self::WIDESPREAD_RASH]                    = mt_rand(1, 2);
-                $rRow[self::HISTORY_OF_ALLERGY]                 = mt_rand(1, 2);
-                $rRow[self::NEW_NEURO_DEFICIT]                  = mt_rand(1, 2);
-                $rRow[self::FRACTURE]                           = mt_rand(1, 2);
-                $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]         = mt_rand(1, 2);
-                $rRow[self::TEMPERATURE]                        = MTS_TEMPERATURE_VALUES::getNormal();
-                
-                $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2);
-                $rRow[self::RECENT_PROBLEM]                             = mt_rand(1, 2);
+                $rRow[self::WIDESPREAD_RASH]                    = mt_rand(1, 2) / 100;
+                $rRow[self::HISTORY_OF_ALLERGY]                 = mt_rand(1, 2) / 100;
+                $rRow[self::NEW_NEUROLOGICAL_DEFICIT]           = mt_rand(1, 2) / 100;
+                $rRow[self::FRACTURE]                           = mt_rand(1, 2) / 100;
+                $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]         = mt_rand(1, 2) / 100;
+                $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2) / 100;
+                $rRow[self::RECENT_PROBLEM]                     = mt_rand(1, 2) / 100;
                 $rRow[self::DEFORMITY]                          = self::OFF ;
-                $rRow[self::SWELLING]                           = mt_rand(1, 2); 
+                $rRow[self::SWELLING]                           = mt_rand(1, 2) / 100; 
                 $this->clearLevel($this->m_rL1, $rRow) ;
                 $this->clearLevel($this->m_rL2, $rRow) ;
                 $this->clearLevel($this->m_rL3, $rRow) ;
@@ -958,9 +1000,6 @@
             $rRow[self::UNRESPONSIVE_CHILD]                         = self::OFF;
             $rRow[self::STRIDOR]                                    = self::OFF;
             $rRow[self::HYPOGLYCAEMIA]                              = self::OFF ;
-            $rRow[self::PAIN]                                       = self::OFF;
-            $rRow[self::RECENT_PAIN]                                = self::ON;
-            $rRow[self::ITCH]                                       = self::OFF ;
             $rRow[self::ALTERED_CONSCIOUS_LEVEL]                    = self::OFF ;
             $rRow[self::HOT_CHILD]                                  = self::OFF ;
             $rRow[self::VERY_HOT_ADULT]                             = self::OFF ;
@@ -968,17 +1007,15 @@
             $rRow[self::FACIAL_OEDEMA]                              = self::OFF ;
             $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]                = self::OFF ;
             $rRow[self::MARKED_TACHYCARDIA]                         = self::OFF ;
-            $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]                         = self::OFF ;
+            $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]            = self::OFF ;
             $rRow[self::ABNORMAL_PULSE]                             = self::OFF ;
             $rRow[self::LOW_SAO2] = $rRow[self::VERY_LOW_SAO2]      = self::OFF ;
             $rRow[self::WIDESPREAD_RASH]                            = self::OFF ;
             $rRow[self::HISTORY_OF_ALLERGY]                         = self::OFF ;
-            $rRow[self::NEW_NEURO_DEFICIT]                          = self::OFF ;
-            $rRow[self::FRACTURE]                                   = self::OFF ;
-            $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]                 = self::OFF ;
-            $rRow[self::TEMPERATURE]                                = MTS_TEMPERATURE_VALUES::getNormal();                       
+            $rRow[self::NEW_NEUROLOGICAL_DEFICIT]                   = self::OFF ;
+            $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]                 = self::OFF ;                
             $rRow[self::LOCAL_INFLAMATION]                          = self::OFF ;
-            $rRow[self::RECENT_PROBLEM]                                     = self::ON;
+            $rRow[self::RECENT_PROBLEM]                             = self::ON;
             $rRow[self::RECENT_MILD_PAIN_OR_ITCH]                   = self::ON;
             $rRow[self::DEFORMITY]                                  = self::OFF ;
             $rRow[self::SWELLING]                                   = self::OFF ;
@@ -1020,15 +1057,15 @@
          * Level 5
          */
         public function isHypochondriac($rRow){
-              return ( $rRow[self::HCC_UNCONSCIOUS] <= 1 || 
-                      $rRow[self::AIRWAY_COMPROMISE] <= 1 || 
-                      $rRow[self::EXSANGUATING_HAEMORRHAGE] <= 1 || 
-                      $rRow[self::VERY_HOT_ADULT] <= 1 ||
-                      $rRow[self::HYPOGLYCAEMIA] <= 1 ||
-                      $rRow[self::UNRESPONSIVE_CHILD] <= 1 || 
-                      $rRow[self::SHOCK] <= 1 || 
-                      $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] <= 1 ||
-                      $rRow[self::TEMPERATURE] < $m_T->HOT) ;        
+              return ( $rRow[self::HCC_UNCONSCIOUS] <= self::ON || 
+                      $rRow[self::AIRWAY_COMPROMISE] <= self::ON || 
+                      $rRow[self::EXSANGUATING_HAEMORRHAGE] <= self::ON || 
+                      $rRow[self::VERY_HOT_ADULT] <= self::ON ||
+                      $rRow[self::HYPOGLYCAEMIA] <= self::ON ||
+                      $rRow[self::UNRESPONSIVE_CHILD] <= self::ON || 
+                      $rRow[self::SHOCK] <= self::ON || 
+                      $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY] <= self::ON ||
+                      $rRow[self::HOT_CHILD] < self::ON) ;        
         }
         
         /*
@@ -1243,90 +1280,147 @@
             $strDataFilename   = sprintf("%s_data.csv", $strName) ;
             //$strResultFilename = sprintf("%s_result.csv", $strName) ;
             $strResult         = null ;
+            $strData           = null ;
             unlink ( $strDataFilename ) ;
             //unlink ( $strResultFilename ) ;
             print("<br>") ;
             
             if($DEBUG){
-                printf("The Vector has <b>[%d]</b> Elements.<br>", sizeof($this->m_rRow)) ;
+                printf("<hr>%s %s The Vectors have <b>[%d]</b> Elements. L1 %d + L2 %d + L3 %d + L4 %d + CUSTOM %d<hr>", 
+                        __METHOD__, __LINE__,
+                        sizeof($this->m_rL1) +
+                        sizeof($this->m_rL2) +
+                        sizeof($this->m_rL3) +
+                        sizeof($this->m_rL4) +
+                        sizeof($this->m_rCustom),
+                        sizeof($this->m_rL1) ,
+                        sizeof($this->m_rL2) ,
+                        sizeof($this->m_rL3) ,
+                        sizeof($this->m_rL4) ,
+                        sizeof($this->m_rCustom)
+                        ) ;
+                $strData = null ;
+                /*
+                foreach($this->m_rL1 as $key){
+                        $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+                }
+                foreach($this->m_rL2 as $key){
+                        $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+                }
+                foreach($this->m_rL3 as $key){
+                        $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+                }
+                foreach($this->m_rL4 as $key){
+                        $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+                }  
+                */
+                foreach($this->m_rCustom as $key){
+                        $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+                }
+                printf("%s %s <br>[%s]<br>", __METHOD__, __LINE__, $strData) ;
+                
+                
+                /*
                 $rElements = array_keys($this->m_rRow) ;
                 for($i=0;$i<sizeof($rElements);$i++){
                     printf("[%s]<br>", $rElements[$i]) ;
-                }                
+                } */               
             }
             
             foreach($this->m_rData as $this->m_rRow){ //fünf Einstufungen
                 switch($this->m_rRow['EINSTUFUNG']){
                  case 1:
-                     $strResult = "1.0,0.0,0.0,0.0,0.0,A" ; //die Buchstaben sind nur Hilfe f. Lesen des Outputs
+                     $strResult = "0.9,0.1,0.1,0.1,0.1" ; //die Buchstaben sind nur Hilfe f. Lesen des Outputs
                      break ;
                  case 2:
-                     $strResult = "0.0,1.0,0.0,0.0,0.0,B" ;
+                     $strResult = "0.1,0.9,0.1,0.1,0.1" ;
                      break ;
                  case 3:
-                     $strResult = "0.0,0.0,1.0,0.0,0.0,C" ;
+                     $strResult = "0.1,0.1,0.9,0.1,0.1" ;
                      break ;
                  case 4:
-                     $strResult = "0.0,0.0,0.0,1.0,0.0,D" ;                     
+                     $strResult = "0.1,0.1,0.1,0.9,0.1" ;                     
                      break ;
                  case 5:
-                     $strResult = "0.0,0.0,0.0,0.0,1.0,E" ;                     
+                     $strResult = "0.1,0.1,0.1,0.1,0.9" ;                     
                      break ;
                  default:       
-                     $strResult = "0.0,0.0,0.0,0.0,1.0,F" ;
-                     
+                     $strResult = "0.1,0.1,0.1,0.1,0.9" ;                     
                 }
                 
+            $strData = null ; 
+            foreach($this->m_rL1 as $key){
+                    $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+            }
+            foreach($this->m_rL2 as $key){
+                    $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+            }
+            foreach($this->m_rL3 as $key){
+                    $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+            }
+            foreach($this->m_rL4 as $key){
+                    $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+            } 
+            
+            foreach($this->m_rCustom as $key){
+                    $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
+            }
+            
+            $strOut = sprintf("%s,%s", $strData, $strResult) ;
 
-                
-                $strOut = sprintf( "%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,"
-                        .          "%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,"
-                        .          "%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,"
-                        .          "%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,%s.0,"
+        /*        
+                $strOut = sprintf( "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        .          "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        .          "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        .          "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        .          "%s,%s,%s,%s,"                        
                         .          "%s\n", 
-                        $this->m_rRow[self::HCC_GENDER],
-                        $this->m_rRow[self::HCC_AGE],
-                        $this->m_rRow[self::HCC_UNCONSCIOUS],
-                        $this->m_rRow[self::HCC_DAYTIME] ,
-                        $this->m_rRow[self::HCC_PRIVATE_INSURANCE] ,
-                        $this->m_rRow[self::AIRWAY_COMPROMISE] ,
-                        $this->m_rRow[self::INADEQUATE_BREATHING] ,
-                        $this->m_rRow[self::EXSANGUATING_HAEMORRHAGE]         ,
-                        $this->m_rRow[self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE] ,                        
-                        $this->m_rRow[self::SHOCK]                            ,//10
-                        $this->m_rRow[self::CURRENTLY_FITTING]                ,
-                        $this->m_rRow[self::UNRESPONSIVE_CHILD]               ,
-                        $this->m_rRow[self::STRIDOR]                          ,                         
-                        $this->m_rRow[self::HYPOGLYCAEMIA]                    ,
-                        $this->m_rRow[self::SEVERE_ITCH]                      ,
-                        $this->m_rRow[self::PAIN]                             ,  
-                        $this->m_rRow[self::RECENT_PAIN]                      ,
-                        $this->m_rRow[self::ITCH]                             ,
-                        $this->m_rRow[self::ALTERED_CONSCIOUS_LEVEL]          ,                         
-                        $this->m_rRow[self::HOT_CHILD]                        ,//20
-                        $this->m_rRow[self::VERY_HOT_ADULT]                   ,
-                        $this->m_rRow[self::FACIAL_OEDEMA]                    ,
-                        $this->m_rRow[self::OEDEMA_OF_THE_LONGUE]             ,
-                        $this->m_rRow[self::UNABLE_TO_TALK_IN_SENTENCES]      ,
-                        $this->m_rRow[self::MARKED_TACHYCARDIA]               , 
-                        $this->m_rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]               ,
-                        $this->m_rRow[self::ABNORMAL_PULSE]                   ,
-                        $this->m_rRow[self::LOW_SAO2]                         ,
-                        $this->m_rRow[self::VERY_LOW_SAO2]                    ,
-                        $this->m_rRow[self::WIDESPREAD_RASH]                  , //30
-                        
-                        $this->m_rRow[self::HISTORY_OF_ALLERGY]               ,
-                        $this->m_rRow[self::NEW_NEURO_DEFICIT]                ,
-                        $this->m_rRow[self::FRACTURE]                         ,
-                        $this->m_rRow[self::HISTORY_OF_UNCONSCIOUSNESS]       ,
-                        $this->m_rRow[self::TEMPERATURE]                      , 
-                        $this->m_rRow[self::LOCAL_INFLAMATION]                ,                         
-                        $this->m_rRow[self::RECENT_PROBLEM]                           ,
-                        $this->m_rRow[self::RECENT_MILD_PAIN_OR_ITCH]         ,
-                        $this->m_rRow[self::DEFORMITY]                        ,//                        
-                        $this->m_rRow[self::SWELLING]                         ,//40                       
+                                $this->m_rRow[self::HCC_GENDER],
+                                $this->m_rRow[self::HCC_AGE],
+                                $this->m_rRow[self::HCC_PRIVATE_INSURANCE],
+                                $this->m_rRow[self::HCC_UNCONSCIOUS],
+                                $this->m_rRow[self::HCC_DAYTIME],
+                                $this->m_rRow[self::HCC_RECURRING],
+                                $this->m_rRow[self::AIRWAY_COMPROMISE],
+                                $this->m_rRow[self::INADEQUATE_BREATHING],
+                                $this->m_rRow[self::EXSANGUATING_HAEMORRHAGE],
+                                $this->m_rRow[self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE],
+                                $this->m_rRow[self::SHOCK],
+                                $this->m_rRow[self::CURRENTLY_FITTING],
+                                $this->m_rRow[self::UNRESPONSIVE_CHILD],
+                                $this->m_rRow[self::STRIDOR],
+                                $this->m_rRow[self::HYPOGLYCAEMIA],
+                                $this->m_rRow[self::ALTERED_CONSCIOUS_LEVEL],
+                                $this->m_rRow[self::HOT_ADULT],
+                                $this->m_rRow[self::HOT_CHILD],
+                                $this->m_rRow[self::VERY_HOT_ADULT],
+                                $this->m_rRow[self::FACIAL_OEDEMA],
+                                $this->m_rRow[self::OEDEMA_OF_THE_LONGUE],              //20
+                                $this->m_rRow[self::UNABLE_TO_TALK_IN_SENTENCES],
+                                $this->m_rRow[self::MARKED_TACHYCARDIA],
+                                $this->m_rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY],
+                                $this->m_rRow[self::ABNORMAL_PULSE],
+                                $this->m_rRow[self::LOW_SAO2],
+                                $this->m_rRow[self::WIDESPREAD_RASH],
+                                $this->m_rRow[self::SIGNIFICANT_HISTORY_OF_ALLERGY],
+                                $this->m_rRow[self::HISTORY_OF_ALLERGY],
+                                $this->m_rRow[self::HISTORY_OF_UNCONSCIOUSNESS],
+                                $this->m_rRow[self::LOCAL_INFLAMATION],
+                                $this->m_rRow[self::RECENT_PROBLEM],
+                                $this->m_rRow[self::RECENT_MILD_PAIN_OR_ITCH],
+                                $this->m_rRow[self::SEVERE_PAIN_OR_ITCH],
+                                $this->m_rRow[self::VERY_LOW_SAO2],
+                                $this->m_rRow[self::DEFORMITY],
+                                $this->m_rRow[self::GROSS_DEFORMITY],
+                                $this->m_rRow[self::OPEN_FRACTURE],
+                                $this->m_rRow[self::SWELLING],
+                                $this->m_rRow[self::MODERATE_PAIN_OR_ITCH],
+                                $this->m_rRow[self::WARMTH],
+                                $this->m_rRow[self::COLD],                             //40
+                                $this->m_rRow[self::UNSTOPPABLE_MINOR_HAEMORRAGE],
+                                $this->m_rRow[self::NEW_NEUROLOGICAL_DEFICIT],
                         $strResult);
-                
+    */            
                 $strOut = preg_replace("/,/", $cDelimiter, $strOut) ;
                 printf("%s<br>", $strOut) ;
                 file_put_contents($strDataFilename, $strOut, FILE_APPEND) ;
@@ -1360,21 +1454,23 @@
         
         //$oGen->getRow() ;
         if( $Level ){
-            $oGen->generateBatch($nRows / 10, $Level) ;  
+            $oGen->generateBatch($nRows / 100, $Level) ;  
         }else{
-            $oGen->generateBatch($nRows / 10, __LEVEL1__) ;        //10%        
-            $oGen->generateBatch($nRows / 10, __LEVEL2__) ;        //10%  
+            $oGen->generateBatch($nRows / 100, __LEVEL1__) ;        //10%        
+            $oGen->generateBatch($nRows / 100, __LEVEL2__) ;        //10%  
             $oGen->generateBatch($nRows /  5, __LEVEL3__) ;        //20%  
             $oGen->generateBatch($nRows /  2, __LEVEL4__);         //50%
-            $oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__);  //10%
+            $oGen->generateBatch($nRows / 100, __HYPOCHONDRIAC__);  //10%
         }
-        
-        
-         
-        
         $oGen->classify() ;
         //$oGen->dump() ;
         $oGen->toFile("training", " ", 1) ;
+        
+        $oGen = new MTS(isset($_GET["DEBUG"])) ;
+        //testdaten 10% der trainingsdaten
+        $oGen->generateBatch($nRows / 100, __LEVEL1__);  //10%
+        $oGen->classify() ;
+        $oGen->toFile("test", " ", 1) ;
         return ;
     }
     else{        
