@@ -15,6 +15,9 @@ import h5py
 #'training.xp.csv'
 strTrainingFilename = 'training_data.csv'
 strTestFilename    = 'test_data.csv'
+filepath="lstm.triage.hdf5"
+iDataElementCount = 43
+iResultElementCount = 5
 
 def generate_arrays_from_file(path):
     while True:
@@ -26,19 +29,19 @@ def generate_arrays_from_file(path):
  #               yield ({'input_1': x1, 'input_2': x2}, {'output': y}) 
 #x                np.array( line )
 
-                rTrain  = np.zeros((1, 44)) 
-                rResult = np.zeros((1, 5)) 
+                rTrain  = np.zeros((1, iDataElementCount)) 
+                rResult = np.zeros((1, iResultElementCount)) 
                 datas  = np.fromstring(line, dtype=float, sep=' ')
                 
-                rTrain[0] = datas[0:44]
-                rResult[0] = datas[44:]
-                print( rTrain )
+                rTrain[0] = datas[0:iDataElementCount]
+                rResult[0] = datas[iDataElementCount:]
+#               print( rTrain )
                 
 #                print(np.shape(datas[0:44]), datas[0:44])
-                train  = datas[0:44]
-                result = datas[44:]
-                print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+#                train  = datas[0:44]
+#                result = datas[44:]
+#                print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+#                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
 #                yield(train.reshape(44,1), result) 
 #                yield ({'input_1': train, 'input_2': result}, {'output': result}) 
 # geht auch nicht - gibt immer falschen shape 1,                
@@ -50,11 +53,11 @@ def async_get_for_prediction(path):
     while True:
         with open(path) as f:
             for line in f:
-                rTest  = np.zeros((1, 44)) 
-                rResult = np.zeros((1, 5)) 
+                rTest  = np.zeros((1, iDataElementCount)) 
+                rResult = np.zeros((1, iResultElementCount)) 
                 datas  = np.fromstring(line, dtype=float, sep=' ')                
-                rTest[0] = datas[0:44]
-                rResult[0] = datas[44:]     
+                rTest[0] = datas[0:iDataElementCount]
+                rResult[0] = datas[iDataElementCount:]     
                 print('---TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
                 print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
                 yield(rTest, rResult)
@@ -66,11 +69,11 @@ def async_get_for_evaluation(path):
     while True:
         with open(path) as f:
             for line in f:
-                rTest  = np.zeros((1, 44)) 
-                rResult = np.zeros((1, 5)) 
+                rTest  = np.zeros((1, iDataElementCount)) 
+                rResult = np.zeros((1, iResultElementCount)) 
                 datas  = np.fromstring(line, dtype=float, sep=' ')                
-                rTest[0] = datas[0:44]
-                rResult[0] = datas[44:]   
+                rTest[0] = datas[0:iDataElementCount]
+                rResult[0] = datas[iDataElementCount:]   
                 print('---TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
                 print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
                 yield(rTest, rResult)
@@ -78,7 +81,7 @@ def async_get_for_evaluation(path):
             f.close()               
 
 model = Sequential()
-model.add(Dense(12, input_dim=44, activation='relu'))
+model.add(Dense(12, input_dim=iDataElementCount, activation='relu'))
 model.add(Dense(10, activation='relu'))
 #der Ergebnisvektor hat 5 elemente
 model.add(Dense(5, activation='sigmoid'))
@@ -90,12 +93,12 @@ model.add(Dense(5, activation='sigmoid'))
 #, optimizer='adadelta'
 model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy']) 
 
-filepath="lstm_weights.triage.hdf5"
+
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
 
 model.fit_generator(generate_arrays_from_file(strTrainingFilename),
-                    steps_per_epoch=150, epochs=5000
+                    steps_per_epoch=100, epochs=5000
                     )
 
 
@@ -114,8 +117,10 @@ print('Predicted INDEX: ', np.argmax(predictions[0]))
 
 #print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 print('XP Scores:', scores)
-#model.save(filepath) 
-model.save_weights(filepath)
 
+#model.save_weights(filepath)
+
+#1.9.3.29 -> ganzes model wird gespeichert
+model.save(filepath)
 print('END')
 

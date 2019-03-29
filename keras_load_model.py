@@ -8,9 +8,11 @@ Created on Wed Jan  2 16:11:18 2019
 
 # How to load and use weights from a checkpoint
 import sys
+from keras.models import Model
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
+from keras.models import load_model
 import matplotlib.pyplot as plt
 import numpy
 import h5py
@@ -18,38 +20,49 @@ import h5py
 #lstm_weights.triage.hdf5
 #fWeights = "weights.triage.hdf5"
 fWeights = "lstm_weights.triage.hdf5"
+fModel   = "lstm.triage.hdf5"
 # fix random seed for reproducibility
 seed = 7
 numpy.random.seed(seed)
 
 
-
+iDataElementCount = 43
+iResultElementCount = 5
 
 # load pima indians dataset
 dataset = numpy.loadtxt("test_data.csv", delimiter=' ')
 #result_dataset = numpy.loadtxt("test_result.csv", delimiter=' ')
 # split into input (X) and output (Y) variables
-X = dataset[:,0:44]
+X = dataset[:,0:iDataElementCount]
 print(X)
 #da hat noch keiner rausgefunden, wie dataset wirklich funktioniert -  aber so geht's anscheinend - letzte 5 Werte im Array sind die Resultate
-Y = dataset[:,44:10000] 
+Y = dataset[:,iDataElementCount:10000] 
 print('Y Result Data: ', Y)
 #sys.exit(1)
 
-# load weights
-model.load_weights(fWeights)
 
+#model = Sequential()
+# load weights
+#model.load_weights(fWeights)
+#1.9.29.3 das model wird komplett geladen
+
+model = load_model(fModel)
 # create model
-model = Sequential()
-model.add(Dense(12, input_dim=44, kernel_initializer='uniform', activation='relu'))
+
+
+
+
+#model.add(Dense(12, input_dim=iDataElementCount, kernel_initializer='uniform', activation='relu'))
 #, activation='softmax'
-model.add(Dense(10, kernel_initializer='uniform', activation='relu')) 
-model.add(Dense(5, kernel_initializer='uniform', activation='sigmoid'))
+#model.add(Dense(10, kernel_initializer='uniform', activation='relu')) 
+#model.add(Dense(5, kernel_initializer='uniform', activation='sigmoid'))
 
 # Compile model (required to make predictions)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 print("Created model and loaded weights from file [", fWeights, "]")
+
+
 
 # estimate accuracy on whole dataset using loaded weights
 scores = model.evaluate(X, Y, verbose=1)
