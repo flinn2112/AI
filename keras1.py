@@ -17,6 +17,9 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
 import numpy as np
+
+filepath            = "lstm.triage.hdf5"
+iCount = 0 
 # fix random seed for reproducibility
 np.random.seed(7)
 # load pima indians dataset
@@ -24,10 +27,10 @@ dataset = np.loadtxt("training_data.csv", delimiter=" ")
 #result_dataset = np.loadtxt("training_result.csv", delimiter=" ")
 # split into input (X) and output (Y) variables
 #originalwert war 0:8
-X = dataset[:,0:44]
+X = dataset[:,0:43]
 print(X.shape) 
 #orginalwert war ,8
-Y = dataset[:,44:]
+Y = dataset[:,43:]
 print(X)
 print(Y)
 #sys.exit(1)
@@ -37,13 +40,13 @@ print(Y)
 # create model
 model = Sequential()
 #dim war im Beispiel 8
-model.add(Dense(12, input_dim=44, activation='relu'))
+model.add(Dense(12, input_dim=43, activation='relu'))
 model.add(Dense(10, activation='relu'))
 #der Ergebnisvektor hat 5 elemente
 model.add(Dense(5, activation='sigmoid'))
 
 #sgd = keras.optimizers.SGD(lr=0.01, clipvalue=0.5)
-sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
+#sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
 
 # Compile model
 
@@ -68,9 +71,15 @@ model.fit(X, Y, validation_split=0.001, epochs=900, batch_size=500, callbacks=ca
 
 predictions = model.predict(X)
 print('First prediction:', predictions[0])
+for p in predictions:
+    iCount = iCount + 1
+    if (iCount % 10 == 0):
+        print(iCount, ': Predicted Level: ', np.argmax(p) + 1 )
+
+
 print('Predicted INDEX: ', np.argmax(predictions[0]))
 # evaluate the model
 scores = model.evaluate(X, Y)
-
+model.save(filepath)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 print(scores)

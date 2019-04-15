@@ -48,7 +48,7 @@ print('Y Result Data: ', Y)
 
 model = load_model(fModel)
 # create model
-
+#print(model)
 
 
 
@@ -58,14 +58,19 @@ model = load_model(fModel)
 #model.add(Dense(5, kernel_initializer='uniform', activation='sigmoid'))
 
 # Compile model (required to make predictions)
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+#model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-print("Created model and loaded weights from file [", fWeights, "]")
+print("Loading model from file [", fModel, "]")
 
 
 
 # estimate accuracy on whole dataset using loaded weights
 scores = model.evaluate(X, Y, verbose=1)
+
+
+
+#with h5py.File(fModel, 'r') as f:
+#    predictions = model.predict(X)
 
 predictions = model.predict(X)
 print('--------------------------------------') 
