@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"> </script>
+    <script>
+	async function loadMe(){
+		const model = await tf.loadModel('https://revoltos.org/triage_model.json');
+	} 
+    </script>
+  </head>
+<body onload="loadMe()">
+      Hello
+<input type="file" id="upload-json"/>
+<script>
+                //const model = await tf.loadLayersModel('https://revoltos.org/triage_model.json');
+    </script>
+  </body>
+</html>
