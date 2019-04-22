@@ -1,18 +1,41 @@
 <html>
   <head>
     <!-- Load TensorFlow.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"> </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.5"></script>
     <script>
+        var gModel = null ;
 	async function loadMe(){
-		const model = await tf.loadModel('https://revoltos.org/triage_model.json');
+		//const model 
+                gModel = await tf.loadModel('https://revoltos.org/triage_model.json');
 	} 
+        
+        function tftest(){
+            debugger ;
+            //alert(gModel) ;
+            const zeros = tf.zeros([1, 43]);
+            var t = tf.tensor([[1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 2, 2, 1, 2, 1, 1, 2, 1, 4, 1, 1, 3]]) ;
+            var x = gModel.predict(t);
+            //alert(x) ;
+            t = tf.tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 3, 1, 2, 81]]) ;
+            x = gModel.predict(t);
+            alert(x.flatten()) ;
+            var rPredictions = x.dataSync() ;
+            for(var i = 0; i<rPredictions.length;i++){
+                alert(rPredictions[i]) ;
+            }
+            debugger ;
+        }
+        
     </script>
   </head>
 <body onload="loadMe()">
       Hello
 <input type="file" id="upload-json"/>
+    <div>
+        <button onclick="tftest()">Model</button>
+    </div>
 <script>
                 //const model = await tf.loadLayersModel('https://revoltos.org/triage_model.json');
-    </script>
+</script>
   </body>
 </html>
