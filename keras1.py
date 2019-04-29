@@ -17,7 +17,8 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
 import numpy as np
-
+#veraltet, nur wenn die Gewichte gespeichert werden.
+filepath            = "weights.triage.hdf5"
 filepath            = "lstm.triage.hdf5"
 iCount = 0 
 # fix random seed for reproducibility
@@ -57,7 +58,7 @@ model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['ac
 
 # Fit the model
 #der Pfad f. die resultierenden Gewichte
-filepath="weights.triage.hdf5"
+
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
 
@@ -83,3 +84,4 @@ scores = model.evaluate(X, Y)
 model.save(filepath)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 print(scores)
+model.summary()

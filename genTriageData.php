@@ -395,7 +395,7 @@
             foreach($this->m_rData as $this->m_rRow){
                 switch($this->m_rRow['EINSTUFUNG']){
                  case 1:
-                     $strResult = "0.9,0.1,0.0,0.0,0.0" ;
+                     $strResult = "0.9,.1,0.0,0.0,0.0" ;
                      break ;
                  case 2:
                      $strResult = "0.0,0.9,0.0,0.0,0.0" ;
@@ -478,8 +478,8 @@
         private $m_oP ; //Pain Values
         private $m_oT ; //Temperature Values
         
-        const ON  = 0.02 ;
-        const OFF = 0.01 ;
+        const ON  = 2 ;
+        const OFF = 1 ;
         //Custom von hcc ausgedacht:
         const HCC_GENDER                        = "HCC_GENDER" ;
         const HCC_UNCONSCIOUS                   = "HCC_UNCONSCIOUS" ;
@@ -613,6 +613,17 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
             $this->m_oP = new MTS_PAIN_VALUES() ;
         }
         
+        private function make_seed()
+        {
+          list($usec, $sec) = explode(' ', microtime());
+          return $sec + $usec * 1000000;
+        }
+        
+        private function random( $iLow, $iHigh ){
+            //$this->make_seed( ) ;
+            return rand( $iLow, $iHigh ) ;
+        }
+        
         /*
          * 1.9.2.21
          * Clear a level
@@ -710,83 +721,43 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
         }
         
         public function genRandom(){
-            $rRow = array() ;
-            $rRow[self::HCC_GENDER]                         = mt_rand(1, 2) / 100 ;
-            $rRow[self::HCC_UNCONSCIOUS]                    = mt_rand(1, 2) / 100;            
-            $rRow[self::HCC_PRIVATE_INSURANCE]              = mt_rand(1, 2) / 100;
-            $rRow[self::HCC_AGE              ]              = mt_rand(1, 110) / 100;
-            $rRow[self::HCC_RECURRING              ]        = mt_rand(1, 2) / 100;
-            $rRow[self::HCC_DAYTIME    ]                    = mt_rand(1, 4) / 100;
-            
-            foreach($this->m_rL1 as $key){
-                    $rRow[$key] = mt_rand(1, 2)/ 100;
+            $rRow = array() ;            
+            foreach($this->m_rL1 as $key){               
+                $rRow[$key] = $this->random(1, 2);
+                $rRow[self::HCC_GENDER]                         = $this->random(1, 2)  ;
+                $rRow[self::HCC_UNCONSCIOUS]                    = $this->random(1, 2) ;            
+                $rRow[self::HCC_PRIVATE_INSURANCE]              = $this->random(1, 2) ;
+                $rRow[self::HCC_AGE              ]              = $this->random(1, 110) ;
+                $rRow[self::HCC_RECURRING              ]        = $this->random(1, 2) ;
+                $rRow[self::HCC_DAYTIME    ]                    = $this->random(1, 4) ;
             }
-            foreach($this->m_rL2 as $key){
-                    $rRow[$key] = mt_rand(1, 2)/ 100;
+            foreach($this->m_rL2 as $key){               
+                $rRow[$key] = $this->random(1, 2);
+                $rRow[self::HCC_GENDER]                         = $this->random(1, 2)  ;
+                $rRow[self::HCC_UNCONSCIOUS]                    = $this->random(1, 2) ;            
+                $rRow[self::HCC_PRIVATE_INSURANCE]              = $this->random(1, 2) ;
+                $rRow[self::HCC_AGE              ]              = $this->random(1, 110) ;
+                $rRow[self::HCC_RECURRING              ]        = $this->random(1, 2) ;
+                $rRow[self::HCC_DAYTIME    ]                    = $this->random(1, 4) ;
             }
-            foreach($this->m_rL3 as $key){
-                    $rRow[$key] = mt_rand(1, 2)/ 100;
+            foreach($this->m_rL3 as $key){                
+                $rRow[$key] = $this->random(1, 2);
+                $rRow[self::HCC_GENDER]                         = $this->random(1, 2)  ;
+                $rRow[self::HCC_UNCONSCIOUS]                    = $this->random(1, 2) ;            
+                $rRow[self::HCC_PRIVATE_INSURANCE]              = $this->random(1, 2) ;
+                $rRow[self::HCC_AGE              ]              = $this->random(1, 110) ;
+                $rRow[self::HCC_RECURRING              ]        = $this->random(1, 2) ;
+                $rRow[self::HCC_DAYTIME    ]                    = $this->random(1, 4) ;
             }
-            foreach($this->m_rL4 as $key){
-                    $rRow[$key] = mt_rand(1, 2)/ 100;
-            }
-            
-            
-            /*
-            $rRow[self::AIRWAY_COMPROMISE]                  = mt_rand(1, 2);
-            $rRow[self::INADEQUATE_BREATHING]               = mt_rand(1, 2) ;
-            $rRow[self::EXSANGUATING_HAEMORRHAGE]           = mt_rand(1, 2);
-            $rRow[self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE]   = mt_rand(1, 2);
-            $rRow[self::SHOCK]                              = mt_rand(1, 2);
-            
-            $rRow[self::CURRENTLY_FITTING]                  = mt_rand(1, 2);
-            $rRow[self::UNRESPONSIVE_CHILD]                 = mt_rand(1, 2);
-            $rRow[self::STRIDOR]                            = mt_rand(1, 2);
-            $rRow[self::HYPOGLYCAEMIA]                      = mt_rand(1, 2);
-            $rRow[self::SEVERE_ITCH]                        = mt_rand(1, 2);
-            $rRow[self::PAIN]                               = MTS_PAIN_VALUES::getRand();
-            $rRow[self::RECENT_PAIN]                        = mt_rand(1, 2);
-            $rRow[self::ITCH]                               = mt_rand(1, 2);
-            $rRow[self::ALTERED_CONSCIOUS_LEVEL]            = mt_rand(1, 2);
-            $rRow[self::HOT_CHILD]                          = mt_rand(1, 2);
-            $rRow[self::VERY_HOT_ADULT]                     = mt_rand(1, 2);
-            
-            $rRow[self::FACIAL_OEDEMA]                      = mt_rand(1, 2);
-            $rRow[self::OEDEMA_OF_THE_LONGUE]               = mt_rand(1, 2);
-            $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]        = mt_rand(1, 2);
-            $rRow[self::MARKED_TACHYCARDIA]                 = mt_rand(1, 2);
-            $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]    = mt_rand(1, 2);
-            $rRow[self::ABNORMAL_PULSE]                     = mt_rand(1, 2);
-            $rRow[self::VERY_LOW_SAO2]                      = mt_rand(1, 2);
-            if( 2 == $rRow[self::VERY_LOW_SAO2] ){ //dann ist auch LOW true.
-                $rRow[self::LOW_SAO2]                       = self::ON ;
-            }
-            else{
-                $rRow[self::LOW_SAO2]                       = mt_rand(1, 2);
-            }
-            
-            $rRow[self::WIDESPREAD_RASH]                    = mt_rand(1, 2);
-            $rRow[self::HISTORY_OF_ALLERGY]                 = mt_rand(1, 2);
-            
-            $rRow[self::NEW_NEURO_DEFICIT]                  = mt_rand(1, 2);
-            $rRow[self::FRACTURE]                           = mt_rand(1, 2);
-            $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]         = mt_rand(1, 2);
-            
-            $rRow[self::WARMTH]                             = mt_rand(1, 2);
-            $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2); //ist L4
-            $rRow[self::RECENT_PROBLEM]                     = mt_rand(1, 2);
-            $rRow[self::RECENT_MILD_PAIN_OR_ITCH]           = mt_rand(1, 2);
-            $rRow[self::UNSTOPPABLE_MINOR_HAEMORRAGE]       = mt_rand(1, 2);
-            $rRow[self::MODERATE_PAIN]                      = mt_rand(1, 2);
-            $rRow[self::DEFORMITY]                          = mt_rand(1, 2);
-            $rRow[self::SWELLING]                           = mt_rand(1, 2); 
-            $rRow[self::WARMTH]                             = mt_rand(1, 2); 
-            
-            $rRow[self::HOT_ADULT]                          = mt_rand(1, 2);
-            $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]    = mt_rand(1, 2); 
-            $rRow[self::WARMTH]                             = mt_rand(1, 2); 
-            */
-            
+            foreach($this->m_rL4 as $key){                
+                $rRow[$key] = $this->random(1, 2);
+                $rRow[self::HCC_GENDER]                         = $this->random(1, 2)  ;
+                $rRow[self::HCC_UNCONSCIOUS]                    = $this->random(1, 2) ;            
+                $rRow[self::HCC_PRIVATE_INSURANCE]              = $this->random(1, 2) ;
+                $rRow[self::HCC_AGE              ]              = $this->random(1, 110) ;
+                $rRow[self::HCC_RECURRING              ]        = $this->random(1, 2) ;
+                $rRow[self::HCC_DAYTIME    ]                    = $this->random(1, 4) ;
+            }          
             return $rRow ;
         }
         
@@ -794,8 +765,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
         /*
          * Normal generieren, dann aber bestimmte Werte prüfen und ggf. hochsetzen
          */
-        public function genUrgent($nRows){
-            
+        public function genUrgent($nRows){            
             $iIdx = 0 ; //zum Würfeln.
             if($this->m_DEBUG){
                 printf("<br>%s:%d Generating [%d] rows.<br>", __METHOD__, __LINE__, $nRows) ;
@@ -823,9 +793,9 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                     $rRow[self::VERY_HOT_ADULT] = self::ON ;
                     $rRow[self::HOT_CHILD] = self::OFF ;
                 }
-                
+                //bewusstlos und unable to talk in sentences passt nicht zusammen.
                 if( self::ON == $rRow[self::HCC_UNCONSCIOUS] && self::ON == $rRow[self::UNABLE_TO_TALK_IN_SENTENCES] ){
-                    $rRow[self::UNABLE_TO_TALK_IN_SENTENCES] = 1 ;
+                    $rRow[self::UNABLE_TO_TALK_IN_SENTENCES] = self::OFF ;
                 }
                 array_push($this->m_rData, $rRow) ;
             }            
@@ -843,10 +813,10 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
             if($this->m_DEBUG){
                 printf("<br>%s:%d Generating [%d] rows.<br>", __METHOD__, __LINE__, $nRows) ;
             }
-            $rRow = $this->genRandom($nRows) ; //zunächst wird ein Urgent Datensatz generiert, dann abgepimpt:
         
             for($i=0;$i<$nRows;$i++){
-                $this->clearLevel($this->m_rL1, $rRow) ;
+                $rRow = $this->genRandom() ; //zunächst wird ein Urgent Datensatz generiert, dann abgepimpt:
+                $this->clearLevel($this->m_rL1, $rRow) ;  //lösche alle höheren level werte raus.
                 $this->clearLevel($this->m_rL2, $rRow) ;
                 $this->clearLevel($this->m_rL3, $rRow) ;
                 /*
@@ -861,8 +831,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                 }
                 $rRow[$this->m_rL4[$iIdx]] = self::ON ;
                 array_push($this->m_rData, $rRow) ;
-            }
-            
+            }            
             return $rRow ;
         }
         
@@ -876,45 +845,35 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
             if($this->m_DEBUG){
                 printf("<br>%s:%d Generating [%d] rows.<br>", __METHOD__, __LINE__, $nRows) ;
             }
-            $rRow = $this->genRandom($nRows) ; //zunächst wird ein Urgent Datensatz generiert, dann abgepimpt:
         
             for($i=0;$i<$nRows;$i++){
+                $rRow = $this->genRandom() ; //zunächst wird ein Urgent Datensatz generiert, dann abgepimpt:
                 $this->clearLevel($this->m_rL1, $rRow) ;
                 $this->clearLevel($this->m_rL2, $rRow) ;
-                $this->clearLevel($this->m_rL3, $rRow) ;
-                //print("<p style=\"color:white;background-color:green\">Cleared L1: </p><br>") ;
-                //print_r($rRow) ;
-                //print("Cleared L1: <br>") ;
-                
-                $iIdx = mt_rand(0, count($this->m_rL3) - 1); //so viele Merkmale machen Needy aus, eines nehmen wir.
+                $this->clearLevel($this->m_rL3, $rRow) ;$iIdx = mt_rand(0, count($this->m_rL3) - 1); //so viele Merkmale machen Needy aus, eines nehmen wir.
                 $rRow[$this->m_rL3[$iIdx]] = self::ON ;
                 array_push($this->m_rData, $rRow) ;
             }
-            
             return $rRow ;
         }
         
         /* Level 3
          * Normal generieren, dann aber bestimmte Werte prüfen und ggf. hochsetzen
          */
-        public function genLevel2($nRows){            
+        public function genLevel2($nRows){
             $iIdx = 0 ; //zum Würfeln.
             $i = 0 ;
             $k = 0 ;
             if($this->m_DEBUG){
                 printf("<br>%s:%d Generating [%d] rows.<br>", __METHOD__, __LINE__, $nRows) ;
             }
-            $rRow = $this->genRandom($nRows) ; //zunächst wird ein Urgent Datensatz generiert, dann abgepimpt:
-        
             for($i=0;$i<$nRows;$i++){
-                $this->clearLevel($this->m_rL1, $rRow) ;
-               
-               
+                $rRow = $this->genRandom() ; //zunächst wird ein Urgent Datensatz generiert, dann abgepimpt:
+                $this->clearLevel($this->m_rL1, $rRow) ;               
                 $iIdx = mt_rand(0, count($this->m_rL2) - 1); //so viele Merkmale machen Needy aus, eines nehmen wir.
                 $rRow[$this->m_rL2[$iIdx]] = self::ON ;
                 array_push($this->m_rData, $rRow) ;
-            }
-            
+            }            
             return $rRow ;
         }
         
@@ -940,7 +899,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                 $this->clearLevel($this->m_rL3, $rRow) ;
                 $this->clearLevel($this->m_rL4, $rRow) ;
                 $rRow[self::HCC_UNCONSCIOUS]                    = self::OFF ; //nicht bewusstlos
-                $rRow[self::HCC_DAYTIME    ]                    = mt_rand(1, 2) / 100; //nur morgens, mittags
+                $rRow[self::HCC_DAYTIME    ]                    = $this->random(1, 2) ; //nur morgens, mittags
                 $rRow[self::AIRWAY_COMPROMISE]                  = self::OFF ;
                 $rRow[self::INADEQUATE_BREATHING]               = self::OFF ; //mt_rand(1, 2);
                 $rRow[self::EXSANGUATING_HAEMORRHAGE]           = self::OFF ;
@@ -948,8 +907,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                 $rRow[self::SHOCK]                              = self::OFF ;
                 $rRow[self::CURRENTLY_FITTING]                  = self::OFF ;
                 $rRow[self::UNRESPONSIVE_CHILD]                 = self::OFF ; //mt_rand(1, 2);
-                $rRow[self::STRIDOR]                            = self::OFF ; //mt_rand(1, 2);
-                
+                $rRow[self::STRIDOR]                            = self::OFF ; //mt_rand(1, 2);                
                 $rRow[self::HYPOGLYCAEMIA]                      = self::OFF ;
                 $rRow[self::SEVERE_ITCH]                        = self::OFF ;
                 $rRow[self::ALTERED_CONSCIOUS_LEVEL]            = self::OFF ;
@@ -957,26 +915,22 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                 $rRow[self::VERY_HOT_ADULT]                     = self::OFF ;
                 $rRow[self::OEDEMA_OF_THE_LONGUE]               = self::OFF ;
                 $rRow[self::FACIAL_OEDEMA]                      = self::OFF ;
-                $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]        = self::OFF ;
-                
+                $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]        = self::OFF ;                
                 $rRow[self::MARKED_TACHYCARDIA]                 = self::OFF ;
-                $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]                 = self::OFF ;
+                $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]    = self::OFF ;
                 $rRow[self::ABNORMAL_PULSE]                     = self::OFF ;
                 $rRow[self::LOW_SAO2]                           = self::OFF ;
                 $rRow[self::VERY_LOW_SAO2]                      = self::OFF ;
-                $rRow[self::WIDESPREAD_RASH]                    = mt_rand(1, 2) / 100;
-                $rRow[self::HISTORY_OF_ALLERGY]                 = mt_rand(1, 2) / 100;
-                $rRow[self::NEW_NEUROLOGICAL_DEFICIT]           = mt_rand(1, 2) / 100;
-                $rRow[self::FRACTURE]                           = mt_rand(1, 2) / 100;
-                $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]         = mt_rand(1, 2) / 100;
-                $rRow[self::LOCAL_INFLAMATION]                  = mt_rand(1, 2) / 100;
-                $rRow[self::RECENT_PROBLEM]                     = mt_rand(1, 2) / 100;
+                $rRow[self::WIDESPREAD_RASH]                    = $this->random(1, 2) ;
+                $rRow[self::HISTORY_OF_ALLERGY]                 = $this->random(1, 2) ;
+                $rRow[self::NEW_NEUROLOGICAL_DEFICIT]           = $this->random(1, 2) ;
+                $rRow[self::FRACTURE]                           = $this->random(1, 2) ;
+                $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]         = $this->random(1, 2) ;
+                $rRow[self::LOCAL_INFLAMATION]                  = $this->random(1, 2) ;
+                $rRow[self::RECENT_PROBLEM]                     = $this->random(1, 2) ;
                 $rRow[self::DEFORMITY]                          = self::OFF ;
-                $rRow[self::SWELLING]                           = mt_rand(1, 2) / 100; 
-                $this->clearLevel($this->m_rL1, $rRow) ;
-                $this->clearLevel($this->m_rL2, $rRow) ;
-                $this->clearLevel($this->m_rL3, $rRow) ;
-            array_push($this->m_rData, $rRow) ;
+                $rRow[self::SWELLING]                           = $this->random(1, 2) ; 
+                array_push($this->m_rData, $rRow) ;
             }   
         }
         
@@ -988,42 +942,42 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                 printf("<br>%s:%d Generating [%d] rows.<br>", __METHOD__, __LINE__, $nRows) ;
             }
             for($i=0;$i<$nRows;$i++){
-            $rRow = $this->genRandom() ;
-            $rRow[self::HCC_UNCONSCIOUS]                            = self::OFF ;
-            $rRow[self::HCC_DAYTIME    ]                            = mt_rand(1, 2); //nur morgens, mittags
-            $rRow[self::AIRWAY_COMPROMISE]                          = self::OFF ;
-            $rRow[self::INADEQUATE_BREATHING]                       = self::OFF;
-            $rRow[self::EXSANGUATING_HAEMORRHAGE]                   = self::OFF;
-            $rRow[self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE]           = self::OFF;
-            $rRow[self::SHOCK]                                      = self::OFF;
-            $rRow[self::CURRENTLY_FITTING]                          = self::OFF;
-            $rRow[self::UNRESPONSIVE_CHILD]                         = self::OFF;
-            $rRow[self::STRIDOR]                                    = self::OFF;
-            $rRow[self::HYPOGLYCAEMIA]                              = self::OFF ;
-            $rRow[self::ALTERED_CONSCIOUS_LEVEL]                    = self::OFF ;
-            $rRow[self::HOT_CHILD]                                  = self::OFF ;
-            $rRow[self::VERY_HOT_ADULT]                             = self::OFF ;
-            $rRow[self::OEDEMA_OF_THE_LONGUE]                       = self::OFF ;
-            $rRow[self::FACIAL_OEDEMA]                              = self::OFF ;
-            $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]                = self::OFF ;
-            $rRow[self::MARKED_TACHYCARDIA]                         = self::OFF ;
-            $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]            = self::OFF ;
-            $rRow[self::ABNORMAL_PULSE]                             = self::OFF ;
-            $rRow[self::LOW_SAO2] = $rRow[self::VERY_LOW_SAO2]      = self::OFF ;
-            $rRow[self::WIDESPREAD_RASH]                            = self::OFF ;
-            $rRow[self::HISTORY_OF_ALLERGY]                         = self::OFF ;
-            $rRow[self::NEW_NEUROLOGICAL_DEFICIT]                   = self::OFF ;
-            $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]                 = self::OFF ;                
-            $rRow[self::LOCAL_INFLAMATION]                          = self::OFF ;
-            $rRow[self::RECENT_PROBLEM]                             = self::ON;
-            $rRow[self::RECENT_MILD_PAIN_OR_ITCH]                   = self::ON;
-            $rRow[self::DEFORMITY]                                  = self::OFF ;
-            $rRow[self::SWELLING]                                   = self::OFF ;
-            $this->clearLevel($this->m_rL1, $rRow) ;
-            $this->clearLevel($this->m_rL2, $rRow) ;
-            $this->clearLevel($this->m_rL3, $rRow) ;
-            $this->clearLevel($this->m_rL4, $rRow) ;
-            array_push($this->m_rData, $rRow) ;
+                $rRow = $this->genRandom() ;
+                $rRow[self::HCC_UNCONSCIOUS]                            = self::OFF ;
+                $rRow[self::HCC_DAYTIME    ]                            = $this->random(1, 2) ; //nur morgens, mittags
+                $rRow[self::AIRWAY_COMPROMISE]                          = self::OFF ;
+                $rRow[self::INADEQUATE_BREATHING]                       = self::OFF;
+                $rRow[self::EXSANGUATING_HAEMORRHAGE]                   = self::OFF;
+                $rRow[self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE]           = self::OFF;
+                $rRow[self::SHOCK]                                      = self::OFF;
+                $rRow[self::CURRENTLY_FITTING]                          = self::OFF;
+                $rRow[self::UNRESPONSIVE_CHILD]                         = self::OFF;
+                $rRow[self::STRIDOR]                                    = self::OFF;
+                $rRow[self::HYPOGLYCAEMIA]                              = self::OFF ;
+                $rRow[self::ALTERED_CONSCIOUS_LEVEL]                    = self::OFF ;
+                $rRow[self::HOT_CHILD]                                  = self::OFF ;
+                $rRow[self::VERY_HOT_ADULT]                             = self::OFF ;
+                $rRow[self::OEDEMA_OF_THE_LONGUE]                       = self::OFF ;
+                $rRow[self::FACIAL_OEDEMA]                              = self::OFF ;
+                $rRow[self::UNABLE_TO_TALK_IN_SENTENCES]                = self::OFF ;
+                $rRow[self::MARKED_TACHYCARDIA]                         = self::OFF ;
+                $rRow[self::SIGNIFICANT_MECHANISM_OF_INJURY]            = self::OFF ;
+                $rRow[self::ABNORMAL_PULSE]                             = self::OFF ;
+                $rRow[self::LOW_SAO2] = $rRow[self::VERY_LOW_SAO2]      = self::OFF ;
+                $rRow[self::WIDESPREAD_RASH]                            = self::OFF ;
+                $rRow[self::HISTORY_OF_ALLERGY]                         = self::OFF ;
+                $rRow[self::NEW_NEUROLOGICAL_DEFICIT]                   = self::OFF ;
+                $rRow[self::HISTORY_OF_UNCONSCIOUSNESS]                 = self::OFF ;                
+                $rRow[self::LOCAL_INFLAMATION]                          = self::OFF ;
+                $rRow[self::RECENT_PROBLEM]                             = self::ON;
+                $rRow[self::RECENT_MILD_PAIN_OR_ITCH]                   = self::ON;
+                $rRow[self::DEFORMITY]                                  = self::OFF ;
+                $rRow[self::SWELLING]                                   = self::OFF ;
+                $this->clearLevel($this->m_rL1, $rRow) ;
+                $this->clearLevel($this->m_rL2, $rRow) ;
+                $this->clearLevel($this->m_rL3, $rRow) ;
+                $this->clearLevel($this->m_rL4, $rRow) ;
+                array_push($this->m_rData, $rRow) ;
             }
         }
         
@@ -1052,6 +1006,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
             }
             return $bRet ;
         } 
+//CLASS MTS        
         /*
          * no serious symptoms 
          * Level 5
@@ -1151,7 +1106,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
             
                 
         }
-        
+//CLASS MTS        
         public function generateBatch($nRows, $iType){
             $iBewusstlos = 0 ;
             $iSchmerz    = 0 ;
@@ -1177,6 +1132,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                         return $this->genLevel4($nRows) ;
                         break ;
                     case( __URGENT__ ):  //Level 1
+                    case( __LEVEL1__ ):
                         return $this->genUrgent($nRows) ;
                         break ; 
                     default:
@@ -1330,25 +1286,26 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
             foreach($this->m_rData as $this->m_rRow){ //fünf Einstufungen
                 switch($this->m_rRow['EINSTUFUNG']){
                  case 1:
-                     $strResult = "0.9,0.1,0.1,0.1,0.1" ; //die Buchstaben sind nur Hilfe f. Lesen des Outputs
+                     $strResult = "1,0,0,0,0" ; //die Buchstaben sind nur Hilfe f. Lesen des Outputs
                      break ;
                  case 2:
-                     $strResult = "0.1,0.9,0.1,0.1,0.1" ;
+                     $strResult = "0,1,0,0,0" ;
                      break ;
                  case 3:
-                     $strResult = "0.1,0.1,0.9,0.1,0.1" ;
+                     $strResult = "0,0,1,0,0" ;
                      break ;
                  case 4:
-                     $strResult = "0.1,0.1,0.1,0.9,0.1" ;                     
+                     $strResult = "0,0,0,1,0" ;                     
                      break ;
                  case 5:
-                     $strResult = "0.1,0.1,0.1,0.1,0.9" ;                     
+                     $strResult = "0,0,0,0,1" ;                     
                      break ;
                  default:       
-                     $strResult = "0.1,0.1,0.1,0.1,0.9" ;                     
+                     $strResult = "0,0,0,0,1" ;                     
                 }
                 
-            $strData = null ; 
+            $strData = null ;
+            //die arrays werden abgeloop und alle Werte erfasst, u. an strData angehängt.
             foreach($this->m_rL1 as $key){
                     $strData = sprintf("%s%s%s", $strData, $strData!=null?',':'', $this->m_rRow[$key]) ;
             }
@@ -1421,6 +1378,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
                         $strResult);
     */            
                 $strOut = preg_replace("/,/", $cDelimiter, $strOut) ;
+                $strOut = preg_replace("/0\./", ".", $strOut) ;  //aus 0.1 wird .1
                 printf("%s<br>", $strOut) ;
                 file_put_contents($strDataFilename, $strOut, FILE_APPEND) ;
                 //das Ergebnisfile wird aus der Einstufungsspalte erstellt.                
@@ -1453,13 +1411,14 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
         
         //$oGen->getRow() ;
         if( $Level ){
-            $oGen->generateBatch($nRows / 100, $Level) ;  
+            $oGen->generateBatch($nRows / 10, $Level) ;  
         }else{
-            $oGen->generateBatch($nRows / 100, __LEVEL1__) ;        //10%        
-            $oGen->generateBatch($nRows / 100, __LEVEL2__) ;        //10%  
+            $oGen->generateBatch($nRows / 10, __LEVEL1__) ;        //10%            
+            $oGen->generateBatch($nRows / 10, __LEVEL2__) ;        //10%  
             $oGen->generateBatch($nRows /  5, __LEVEL3__) ;        //20%  
             $oGen->generateBatch($nRows /  2, __LEVEL4__);         //50%
-            $oGen->generateBatch($nRows / 100, __HYPOCHONDRIAC__);  //10%
+            $oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__);  //10%
+  
         }
         $oGen->classify() ;
         //$oGen->dump() ;
@@ -1467,12 +1426,19 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
         
         $oGen = new MTS(isset($_GET["DEBUG"])) ;
         //testdaten 10% der trainingsdaten
-        $oGen->generateBatch($nRows / 100, __LEVEL1__);  //10%
+        $nRows = $nRows / 10 ;
+        $oGen->generateBatch($nRows / 10, __LEVEL1__) ;        //10%       
+        $oGen->generateBatch($nRows / 10, __LEVEL2__) ;        //10%  
+        $oGen->generateBatch($nRows /  5, __LEVEL3__) ;        //20%  
+        $oGen->generateBatch($nRows /  2, __LEVEL4__);         //50%
+        $oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__);  //10%
+        
         $oGen->classify() ;
         $oGen->toFile("test", " ", 1) ;
         return ;
     }
-    else{        
+    else{     
+        /*
     if(1 == $nRows){
         $oGen->generate($nRows - $nRows/5 - $nRows/10) ;
         $oGen->classify() ;
@@ -1506,6 +1472,7 @@ printf("The Vectors has <b>[%d]</b> Elements.<br>", sizeof($this->m_rL1) +
     $oGen->classify() ;
     //$oGen->dump() ;
     $oGen->toFile("test", " ") ;
+    */
     }
     
     

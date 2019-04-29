@@ -81,9 +81,10 @@ iErrs  = 0
 diff   = 0  
 #zu dringlich eingeschätzt ist besser als zu schlecht - deshalb, wenn predict < result, dann ist das erstmal nicht schlimm
 for p in predictions:    
-    print("---    Index Training:",  numpy.nanargmax(Y[i]), "  ---   Index Vorhersage: ", numpy.argmax(p) )  
+#    print("---    Index Training:",  numpy.nanargmax(Y[i]), "  ---   Index Vorhersage: ", numpy.argmax(p) )  
 #    """ wenn vorhersage ungleich trainingsresultat ist, dann fehler hochzaehlen """"
     diff = numpy.absolute(numpy.argmax(p) - numpy.nanargmax(Y[i]))
+    diff = numpy.absolute(diff)
     if( diff != 0 ):        
         #   um 2 zu schlecht abgeschätzt
         
@@ -93,10 +94,11 @@ for p in predictions:
             print("!Fail...", diff )  
             iFails = iFails + 1
         else:     
-            print("!Warning...", diff ) 
+            print("!Warning...", diff )
+            print(X[i], '\nTraining:', Y[i], ' <---> Prediction:', p, '\n')
         print('[', i + 1, ']') 
-        print(X[i], '\nTraining:', Y[i], ' <---> Prediction:', p, '\n')
-        print('Result:', numpy.nanargmax(Y[i]) + 1, ' <---> Prediction:', numpy.argmax(p) + 1, '\n')
+        
+        print(i, ' Result:', numpy.nanargmax(Y[i]) + 1, ' <---> Prediction:', numpy.argmax(p) + 1, '\n')
         iErrs = iErrs + 1
         """
             kritisch

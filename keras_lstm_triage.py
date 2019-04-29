@@ -65,8 +65,8 @@ def async_get_for_prediction(path):
                 datas  = np.fromstring(line, dtype=float, sep=' ')                
                 rTest[0] = datas[0:iDataElementCount]
                 rResult[0] = datas[iDataElementCount:]     
-                print('---TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
-                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+#                print('---TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
+#                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
                 yield(rTest, rResult)
                 """zurückgeben: training array, result array"""
             f.close()   
@@ -81,19 +81,19 @@ def async_get_for_evaluation(path):
                 datas  = np.fromstring(line, dtype=float, sep=' ')                
                 rTest[0] = datas[0:iDataElementCount]
                 rResult[0] = datas[iDataElementCount:]   
-                print('---TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
-                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+                print('---eval TRAIN--->>>',np.shape(rTest), rTest, '<<<-----') 
+                print('---eval RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
                 yield(rTest, rResult)
                 """zurückgeben: training array, result array"""
             f.close()               
 
 model = Sequential()
-model.add(Dense(12, input_dim=iDataElementCount, activation='relu'))
-
-model.add(Dense(8, activation='relu'))
+model.add(Dense(24, input_dim=iDataElementCount, activation='relu'))
+model.add(Dense(12, activation='relu'))
+model.add(Dense(8, activation='sigmoid'))
 
 #der Ergebnisvektor hat 5 elemente
-model.add(Dense(5, activation='sigmoid'))
+model.add(Dense(5, activation='softmax'))
 
 
 #sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.09, epsilon=None, decay=0.0)
@@ -102,30 +102,32 @@ model.add(Dense(5, activation='sigmoid'))
 #, optimizer='adadelta'
 #1: model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy']) 
 
-sgd = optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
-optAdam = keras.optimizers.Adam(lr=0.001)
-optRmsProp = RMSprop(lr=0.0001)
-currentOptimizer = optRmsProp 
+optSGD = optimizers.SGD(lr=0.0001, decay=1e-5, momentum=0.8, nesterov=True )
+optAdam = keras.optimizers.Adam(lr=0.0001)
+optRmsProp = RMSprop(lr=0.001)
+currentOptimizer = optRmsProp
 #2: model.compile(loss='mean_squared_error', optimizer=sgd)
 #categorical_crossentropy
-model.compile(loss=mean_squared_error, optimizer=currentOptimizer, metrics=['accuracy']) 
-model.summary()
-checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+#mean_squared_error
+model.compile(loss=categorical_crossentropy, optimizer=currentOptimizer, metrics=['accuracy']) 
+
+#val_acc
+checkpoint = ModelCheckpoint(filepath, monitor='acc', verbose=1, save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
 #loss_acc
 #kann auch loss sein
-early_stopping = EarlyStopping(monitor='acc', patience=10)
+early_stopping = EarlyStopping(monitor='acc', patience=100)
 
 
 model.fit_generator(generate_arrays_from_file(strTrainingFilename),
-                    steps_per_epoch=50, epochs=1000, callbacks=[early_stopping]
+                    steps_per_epoch=50, epochs=900, callbacks=[early_stopping]
                     )
 
 
 
 
 # doc: predict_generator(generator, steps=None, callbacks=None, max_queue_size=10, workers=1, use_multiprocessing=False, verbose=0)
-predictions = model.predict_generator(async_get_for_prediction(strTestFilename), steps=5)
+predictions = model.predict_generator(async_get_for_prediction(strTestFilename), steps=50000)
 print('First prediction:', predictions[0])
 
 # evaluate the model
@@ -142,6 +144,6 @@ print('XP Scores:', scores)
 
 #1.9.3.29 -> ganzes model wird gespeichert
 model.save(filepath)
-
+model.summary()
 print('END')
 
