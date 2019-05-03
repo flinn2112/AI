@@ -25,51 +25,52 @@ filepath              = "lstm.triage.hdf5"
 iDataElementCount     = 43
 iResultElementCount   =  5
 momentum              = 0.09
-
+iGenCount             = 0
 
 fTrain = open(strTrainingFilename) ;
 
 def generate_arrays_from_file(path):
     global iIDX
-    global fTraining
+    global fTrain
     global iGenCount
-#    while True:
-    iGenCount = iGenCount + 1
-    if fTraining.closed:
-           fTraining = open(strTrainingFilename)
-    print("Generator call #:", iGenCount)
-    iIDX = 0   
-    rDbg     = np.zeros((1, iDataElementCount))
-    rTrain     = np.zeros((20, iDataElementCount)) 
-    rResult    = np.zeros((1, iResultElementCount))
-#        rTrain     = np.zeros((100, iDataElementCount)) 
-#        rResult    = np.zeros((100, iResultElementCount))
-    for x in range(20):             
-         
-         
-         line = fTraining.readline()
-         datas = np.fromstring(line, dtype=float, sep=' ')
-         lst = line.split(' ')
-         lst.pop()
-         lst = lst[0:iDataElementCount]
-         lst.append(lst)
-#         rTrain[iIDX] = lst.pop()
-         print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-         rTrain[iIDX] = lst.pop()
-         print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-         iIDX = iIDX + 1
-#         rDbg = np.array(datas,dtype=float)
-#             rDbg = np.append(rDbg, lst.pop())
-#             rResult = np.insert(rResult, 0, datas[iResultElementCount:])
-#             rTrain = tf.convert_to_tensor(rTrain)
-#             print("DATA #:", iIDX, line)
-#    rTrain = lst
-    
-#    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
-#    rTrain[0]  = datas[0:iDataElementCount]
-#    rResult[0] = datas[iDataElementCount:]
-    
-    yield(rTrain, rResult)
+    while True:
+        iGenCount = iGenCount + 1
+        if fTrain.closed:
+               fTrain = open(strTrainingFilename)
+        print("Generator call #:", iGenCount)
+        iIDX = 0   
+        rDbg     = np.zeros((1, iDataElementCount))
+        rTrain     = np.zeros((1, iDataElementCount)) 
+        rResult    = np.zeros((1, iResultElementCount))
+    #        rTrain     = np.zeros((100, iDataElementCount)) 
+    #        rResult    = np.zeros((100, iResultElementCount))
+    #    for x in range(20):             
+             
+             
+        line = fTrain.readline()
+        if line:
+            datas = np.fromstring(line, dtype=float, sep=' ')
+            lst = line.split(' ')
+            lst.pop()
+            lst = lst[0:iDataElementCount]
+            lst.append(lst)
+        #         rTrain[iIDX] = lst.pop()
+            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+            rTrain[0] = lst.pop()
+            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+            iIDX = iIDX + 1
+        #         rDbg = np.array(datas,dtype=float)
+        #             rDbg = np.append(rDbg, lst.pop())
+        #             rResult = np.insert(rResult, 0, datas[iResultElementCount:])
+        #             rTrain = tf.convert_to_tensor(rTrain)
+        #             print("DATA #:", iIDX, line)
+        #    rTrain = lst
+            
+        #    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
+        #    rTrain[0]  = datas[0:iDataElementCount]
+        #    rResult[0] = datas[iDataElementCount:]
+        
+        yield(rTrain, rResult)
 #                """zurückgeben: training array, result array"""
 #            fTrain.close()                   
                 
@@ -86,7 +87,7 @@ def async_get_for_prediction(path):
 #                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
                 yield(rTest, rResult)
                 """zurückgeben: training array, result array"""
-            f.close()   
+            
             
             
 def async_get_for_evaluation(path):
