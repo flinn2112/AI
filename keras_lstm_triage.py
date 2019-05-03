@@ -26,35 +26,52 @@ iDataElementCount     = 43
 iResultElementCount   =  5
 momentum              = 0.09
 
-def generate_arrays_from_file(path):
-    while True:
-        with open(path) as f:
-            for line in f:
-                # create numpy arrays of input data
-                # and labels, from each line in the file
- #               x1, x2, y = process_line(line)
- #               yield ({'input_1': x1, 'input_2': x2}, {'output': y}) 
-#x                np.array( line )
 
-                rTrain  = np.zeros((1, iDataElementCount)) 
-                rResult = np.zeros((1, iResultElementCount)) 
-                datas  = np.fromstring(line, dtype=float, sep=' ')
-                
-                rTrain[0] = datas[0:iDataElementCount]
-                rResult[0] = datas[iDataElementCount:]
-#               print( rTrain )
-                
-#                print(np.shape(datas[0:44]), datas[0:44])
-#                train  = datas[0:44]
-#                result = datas[44:]
-#                print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-#                print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
-#                yield(train.reshape(44,1), result) 
-#                yield ({'input_1': train, 'input_2': result}, {'output': result}) 
-# geht auch nicht - gibt immer falschen shape 1,                
-                yield(rTrain, rResult)
-                """zurückgeben: training array, result array"""
-            f.close()                   
+fTrain = open(strTrainingFilename) ;
+
+def generate_arrays_from_file(path):
+    global iIDX
+    global fTraining
+    global iGenCount
+#    while True:
+    iGenCount = iGenCount + 1
+    if fTraining.closed:
+           fTraining = open(strTrainingFilename)
+    print("Generator call #:", iGenCount)
+    iIDX = 0   
+    rDbg     = np.zeros((1, iDataElementCount))
+    rTrain     = np.zeros((20, iDataElementCount)) 
+    rResult    = np.zeros((1, iResultElementCount))
+#        rTrain     = np.zeros((100, iDataElementCount)) 
+#        rResult    = np.zeros((100, iResultElementCount))
+    for x in range(20):             
+         
+         
+         line = fTraining.readline()
+         datas = np.fromstring(line, dtype=float, sep=' ')
+         lst = line.split(' ')
+         lst.pop()
+         lst = lst[0:iDataElementCount]
+         lst.append(lst)
+#         rTrain[iIDX] = lst.pop()
+         print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+         rTrain[iIDX] = lst.pop()
+         print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+         iIDX = iIDX + 1
+#         rDbg = np.array(datas,dtype=float)
+#             rDbg = np.append(rDbg, lst.pop())
+#             rResult = np.insert(rResult, 0, datas[iResultElementCount:])
+#             rTrain = tf.convert_to_tensor(rTrain)
+#             print("DATA #:", iIDX, line)
+#    rTrain = lst
+    
+#    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
+#    rTrain[0]  = datas[0:iDataElementCount]
+#    rResult[0] = datas[iDataElementCount:]
+    
+    yield(rTrain, rResult)
+#                """zurückgeben: training array, result array"""
+#            fTrain.close()                   
                 
 def async_get_for_prediction(path):
     while True:
