@@ -20,13 +20,15 @@ import h5py
 #lstm_weights.triage.hdf5
 #fWeights = "weights.triage.hdf5"
 fWeights = "lstm_weights.triage.hdf5"
+#0 = model sync erzeugt
+#1 = async erzeugt 
 fModel   = "lstm.triage.hdf5"
 # fix random seed for reproducibility
 seed = 7
 numpy.random.seed(seed)
 
 
-iDataElementCount = 43
+iDataElementCount   = 43
 iResultElementCount = 5
 
 # load pima indians dataset
@@ -36,10 +38,10 @@ dataset = numpy.loadtxt("test_data.csv", delimiter=' ')
 X = dataset[:,0:iDataElementCount]
 print(X)
 #da hat noch keiner rausgefunden, wie dataset wirklich funktioniert -  aber so geht's anscheinend - letzte 5 Werte im Array sind die Resultate
-Y = dataset[:,iDataElementCount:10000] 
+Y = dataset[:,iDataElementCount:] 
 print('Y Result Data: ', Y)
-#sys.exit(1)
 
+#sys.exit(1)
 
 #model = Sequential()
 # load weights
@@ -63,11 +65,12 @@ model = load_model(fModel)
 print("Loading model from file [", fModel, "]")
 
 
+#
 
 # estimate accuracy on whole dataset using loaded weights
 scores = model.evaluate(X, Y, verbose=1)
 
-
+#
 
 #with h5py.File(fModel, 'r') as f:
 #    predictions = model.predict(X)

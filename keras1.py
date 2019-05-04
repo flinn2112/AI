@@ -19,12 +19,15 @@ from keras.callbacks import ModelCheckpoint
 import numpy as np
 #veraltet, nur wenn die Gewichte gespeichert werden.
 filepath            = "weights.triage.hdf5"
-filepath            = "lstm.triage.hdf5"
+filepath            = "0lstm.triage.hdf5"
 iCount = 0 
 # fix random seed for reproducibility
 np.random.seed(7)
 # load pima indians dataset
 dataset = np.loadtxt("training_data.csv", delimiter=" ")
+
+
+
 #result_dataset = np.loadtxt("training_result.csv", delimiter=" ")
 # split into input (X) and output (Y) variables
 #originalwert war 0:8
@@ -34,7 +37,7 @@ print(X.shape)
 Y = dataset[:,43:]
 print(X)
 print(Y)
-#sys.exit(1)
+
 
 
 

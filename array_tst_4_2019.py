@@ -50,7 +50,7 @@ optAdam = keras.optimizers.Adam(lr=iLearnRate)
 optRmsProp = RMSprop(lr=iLearnRate)
 currentOptimizer = optAdam
 
-fTraining = open(strTrainingFilename) 
+fTrain = open(strTrainingFilename) 
 fTest     = open(strTestFilename) 
 fEval     = open(strEvaluationFilename)
 iIDX = 0
@@ -59,44 +59,49 @@ iGenCount = 0
 iNumRecs  = 0 
 
 
-def generate_arrays_from_file(path):    
+def generate_arrays_from_file(path):
     global iIDX
-    global fTraining
+    global fTrain
     global iGenCount
-#    while True:
-    iGenCount = iGenCount + 1
-    if fTraining.closed:
-           fTraining = open(strTrainingFilename)
-    print("Generator call #:", iGenCount)
-    iIDX = 0   
-    rDbg     = np.zeros((1, iDataElementCount))
-    rTrain     = np.zeros((1, iDataElementCount)) 
-    rResult    = np.zeros((1, iResultElementCount))
-#        rTrain     = np.zeros((100, iDataElementCount)) 
-#        rResult    = np.zeros((100, iResultElementCount))
-    for x in range(10):             
-         iIDX = iIDX + 1
-         
-         line = fTraining.readline()
-         datas = np.fromstring(line, dtype=float, sep=' ')
-         lst = line.split(' ')
-         lst.pop()
-#         lst.reshape(1, 43)
-         lst.append(lst)
-#         rDbg = np.array(datas,dtype=float)
-#             rDbg = np.append(rDbg, lst.pop())
-#             rResult = np.insert(rResult, 0, datas[iResultElementCount:])
-#             rTrain = tf.convert_to_tensor(rTrain)
-#             print("DATA #:", iIDX, line)
+    while True:
+        iGenCount = iGenCount + 1
+        if fTrain.closed:
+               fTrain = open(strTrainingFilename)
+        print("Generator call #:", iGenCount)
+        iIDX = 0   
+        rDbg     = np.zeros((1, iDataElementCount))
+        rTrain     = np.zeros((1, iDataElementCount)) 
+        rResult    = np.zeros((1, iResultElementCount))
+    #        rTrain     = np.zeros((100, iDataElementCount)) 
+    #        rResult    = np.zeros((100, iResultElementCount))
+    #    for x in range(20):             
+             
+             
+        line = fTrain.readline()
+        if line:
+            p = re.compile('\s$')
+            line = p.sub('', line)
+            datas = np.fromstring(line, dtype=float, sep=' ')
+            lst = line.split(' ')
+            lst.pop()
+            lst = lst[0:iDataElementCount]
+            lst.append(lst)
+            
+        #         rTrain[iIDX] = lst.pop()
+#            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+            rTrain[0] = lst.pop()
+            
+            rRes = line.split(' ')
+            print("rRes: ", rRes)
+#            rRes = rRes.pop()
+            rRes = rRes[iDataElementCount:]
+#            rRes.append(rRes)
+            rResult[0] = rRes
+            
+#            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+            iIDX = iIDX + 1
+        
     
-    print('---LST--->>>',np.shape(lst), lst, '<<<-----') 
-    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
-    rTrain[0]  = datas[0:iDataElementCount]
-    rResult[0] = datas[iDataElementCount:]
-#    rTrain.reshape(43,1000)
-        
-        
-        
         
 generate_arrays_from_file(' ')        
         

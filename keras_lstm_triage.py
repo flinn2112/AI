@@ -7,6 +7,8 @@ Created on Tue Mar 19 20:05:36 2019
 """
 import keras
 import numpy as np
+import sys
+import re
 from keras.models import Model
 from keras.layers import Input, Dense
 from keras.models import Sequential
@@ -16,6 +18,8 @@ from keras import optimizers
 from keras.optimizers import RMSprop
 from keras.losses import categorical_crossentropy
 from keras.losses import mean_squared_error
+from keras.callbacks import History 
+
 import h5py
 #'training.xp.csv'
 strTrainingFilename   = 'training_data.csv'
@@ -26,8 +30,17 @@ iDataElementCount     = 43
 iResultElementCount   =  5
 momentum              = 0.09
 iGenCount             = 0
+iPatience             = 1
 
 fTrain = open(strTrainingFilename) ;
+
+keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
+
+optSGD = optimizers.SGD(lr=0.0001, decay=1e-5, momentum=0.8, nesterov=True )
+optAdam = keras.optimizers.Adam(lr=0.0001)
+optRmsProp = RMSprop(lr=0.0001)
+currentOptimizer = optAdam
+
 
 def generate_arrays_from_file(path):
     global iIDX
@@ -39,7 +52,7 @@ def generate_arrays_from_file(path):
                fTrain = open(strTrainingFilename)
         print("Generator call #:", iGenCount)
         iIDX = 0   
-        rDbg     = np.zeros((1, iDataElementCount))
+        rDbg       = np.zeros((1, iDataElementCount))
         rTrain     = np.zeros((1, iDataElementCount)) 
         rResult    = np.zeros((1, iResultElementCount))
     #        rTrain     = np.zeros((100, iDataElementCount)) 
@@ -49,15 +62,27 @@ def generate_arrays_from_file(path):
              
         line = fTrain.readline()
         if line:
+            p = re.compile('\s')
+            p.sub('', line)
             datas = np.fromstring(line, dtype=float, sep=' ')
             lst = line.split(' ')
             lst.pop()
             lst = lst[0:iDataElementCount]
             lst.append(lst)
+            
         #         rTrain[iIDX] = lst.pop()
-            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+#            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
             rTrain[0] = lst.pop()
-            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+            
+
+            rRes = line.split(' ')
+#            print("rRes: ", rRes)
+#            rRes = rRes.pop()
+            rRes = rRes[iDataElementCount:]
+#            rRes.append(rRes)
+            rResult[0] = rRes
+            
+#            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
             iIDX = iIDX + 1
         #         rDbg = np.array(datas,dtype=float)
         #             rDbg = np.append(rDbg, lst.pop())
@@ -69,7 +94,10 @@ def generate_arrays_from_file(path):
         #    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
         #    rTrain[0]  = datas[0:iDataElementCount]
         #    rResult[0] = datas[iDataElementCount:]
-        
+        else:
+            print('NO DATA') 
+        print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+        print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
         yield(rTrain, rResult)
 #                """zurückgeben: training array, result array"""
 #            fTrain.close()                   
@@ -103,10 +131,35 @@ def async_get_for_evaluation(path):
                 print('---eval RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
                 yield(rTest, rResult)
                 """zurückgeben: training array, result array"""
-            f.close()               
+            f.close()    
 
+
+class custom_callbacks(keras.callbacks.Callback):
+    iNumEpochs = 0
+    def __init__(self):
+        self.iNumEpochs = 0
+    def on_train_begin(self, logs={}):
+        self.losses = []
+
+    def on_batch_end(self, batch, logs={}):
+        self.losses.append(logs.get('loss'))
+        
+    def on_epoch_begin(a, b, c):
+        custom_callbacks.iNumEpochs = custom_callbacks.iNumEpochs + 1
+        print('#', a, ' on_epoch_begin')  
+#        sys.exit()
+        pass
+
+    def on_epoch_end(a,b, c):
+        pass    
+    
+    def stats(self):
+        print('#', custom_callbacks.iNumEpochs, ' executed') 
+        pass
+ccb = custom_callbacks()
 model = Sequential()
 model.add(Dense(24, input_dim=iDataElementCount, activation='relu'))
+model.add(Dense(18, input_dim=iDataElementCount, activation='relu'))
 model.add(Dense(12, activation='relu'))
 model.add(Dense(8, activation='sigmoid'))
 
@@ -120,28 +173,34 @@ model.add(Dense(5, activation='softmax'))
 #, optimizer='adadelta'
 #1: model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy']) 
 
-optSGD = optimizers.SGD(lr=0.0001, decay=1e-5, momentum=0.8, nesterov=True )
-optAdam = keras.optimizers.Adam(lr=0.0001)
-optRmsProp = RMSprop(lr=0.001)
-currentOptimizer = optRmsProp
+
 #2: model.compile(loss='mean_squared_error', optimizer=sgd)
 #categorical_crossentropy
 #mean_squared_error
 model.compile(loss=categorical_crossentropy, optimizer=currentOptimizer, metrics=['accuracy']) 
 
 #val_acc
-checkpoint = ModelCheckpoint(filepath, monitor='acc', verbose=1, save_best_only=True, mode='max')
+checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
 #loss_acc
 #kann auch loss sein
-early_stopping = EarlyStopping(monitor='acc', patience=100)
+early_stopping = EarlyStopping(monitor='acc', patience=iPatience)
 
 
-model.fit_generator(generate_arrays_from_file(strTrainingFilename),
-                    steps_per_epoch=50, epochs=900, callbacks=[early_stopping]
+h = model.fit_generator(generate_arrays_from_file(strTrainingFilename),
+                    steps_per_epoch=10, epochs=500, callbacks=[early_stopping, ccb]
                     )
+#history = History()
+# list all data in history
 
+print(h.history.keys())
+print("Epochs: ", custom_callbacks.iNumEpochs)
+print('LOSS: ',h.history['loss'])
+print('ACC: ',h.history['acc'])
+#print(h.history['val_acc'])
 
+"""
+sys.exit()
 
 
 # doc: predict_generator(generator, steps=None, callbacks=None, max_queue_size=10, workers=1, use_multiprocessing=False, verbose=0)
@@ -160,8 +219,12 @@ print('XP Scores:', scores)
 
 #model.save_weights(filepath)
 
+
+"""
 #1.9.3.29 -> ganzes model wird gespeichert
 model.save(filepath)
 model.summary()
+#print(history.losses)
+ccb.stats()
 print('END')
 
