@@ -31,8 +31,10 @@ iResultElementCount   =  5
 momentum              = 0.09
 iGenCount             = 0
 iPatience             = 1
-
-fTrain = open(strTrainingFilename) ;
+iBatchSize            = 200
+iEpochs               = 1
+iStepsPerEpoch        = 10
+fTrain = open(strTrainingFilename) 
 
 keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
 
@@ -41,7 +43,7 @@ optAdam = keras.optimizers.Adam(lr=0.0001)
 optRmsProp = RMSprop(lr=0.0001)
 currentOptimizer = optAdam
 
-
+#gibt immer genau einen Datensatz aus dem File zurück
 def generate_arrays_from_file(path):
     global iIDX
     global fTrain
@@ -101,6 +103,73 @@ def generate_arrays_from_file(path):
         yield(rTrain, rResult)
 #                """zurückgeben: training array, result array"""
 #            fTrain.close()                   
+        fTrain.seek(0)
+
+
+def generate_arrays_from_file2(path):
+    global iIDX
+    global fTrain
+    global iGenCount
+    fTrain = open(strTrainingFilename)
+    
+    while True:
+        iIDX = 0
+        iGenCount = iGenCount + 1
+        if fTrain.closed:
+               fTrain = open(strTrainingFilename)
+        print("Generator call #:", iGenCount)
+           
+        rDbg       = np.zeros((1, iDataElementCount))
+        rTrain     = np.zeros((iBatchSize, iDataElementCount)) 
+        rResult    = np.zeros((iBatchSize, iResultElementCount))
+    #        rTrain     = np.zeros((100, iDataElementCount)) 
+    #        rResult    = np.zeros((100, iResultElementCount))
+        for x in range(iBatchSize): 
+            line = fTrain.readline()
+            if line:
+                p = re.compile('\s')
+                p.sub('', line)
+                datas = np.fromstring(line, dtype=float, sep=' ')
+                lst = line.split(' ')
+                lst.pop()
+                lst = lst[0:iDataElementCount]
+                lst.append(lst)
+                
+            #         rTrain[iIDX] = lst.pop()
+    #            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+                rTrain[iIDX] = lst.pop()
+                
+    
+                rRes = line.split(' ')
+    #            print("rRes: ", rRes)
+    #            rRes = rRes.pop()
+                rRes = rRes[iDataElementCount:]
+    #            rRes.append(rRes)
+                rResult[iIDX] = rRes
+                
+    #            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+                
+            #         rDbg = np.array(datas,dtype=float)
+            #             rDbg = np.append(rDbg, lst.pop())
+            #             rResult = np.insert(rResult, 0, datas[iResultElementCount:])
+            #             rTrain = tf.convert_to_tensor(rTrain)
+            #             print("DATA #:", iIDX, line)
+            #    rTrain = lst
+                
+            #    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
+            #    rTrain[0]  = datas[0:iDataElementCount]
+            #    rResult[0] = datas[iDataElementCount:]
+            else:
+                print('NO DATA at #', iIDX) 
+                iIDX = 0
+            iIDX = iIDX + 1
+#        print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+#        print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+        yield(rTrain, rResult)
+#                """zurückgeben: training array, result array"""
+#            fTrain.close()         
+
+
                 
 def async_get_for_prediction(path):
     while True:
@@ -187,8 +256,8 @@ callbacks_list = [checkpoint]
 early_stopping = EarlyStopping(monitor='acc', patience=iPatience)
 
 
-h = model.fit_generator(generate_arrays_from_file(strTrainingFilename),
-                    steps_per_epoch=10, epochs=500, callbacks=[early_stopping, ccb]
+h = model.fit_generator(generate_arrays_from_file2(strTrainingFilename),
+                    steps_per_epoch=iStepsPerEpoch, epochs=iEpochs, callbacks=[early_stopping, ccb]
                     )
 #history = History()
 # list all data in history
