@@ -30,11 +30,12 @@ iDataElementCount     = 43
 iResultElementCount   =  5
 momentum              = 0.09
 iGenCount             = 0
-iPatience             = 1
-iBatchSize            = 200
-iEpochs               = 1
-iStepsPerEpoch        = 10
+iPatience             = 1000
+iBatchSize            = 20
+iEpochs               = 500
+iStepsPerEpoch        = 1
 fTrain = open(strTrainingFilename) 
+fLog   = open('log.txt', "w")
 
 keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
 
@@ -47,6 +48,7 @@ currentOptimizer = optAdam
 def generate_arrays_from_file(path):
     global iIDX
     global fTrain
+    global fLog
     global iGenCount
     while True:
         iGenCount = iGenCount + 1
@@ -100,15 +102,17 @@ def generate_arrays_from_file(path):
             print('NO DATA') 
         print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
         print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+        
         yield(rTrain, rResult)
 #                """zurückgeben: training array, result array"""
 #            fTrain.close()                   
-        fTrain.seek(0)
+        
 
 
 def generate_arrays_from_file2(path):
     global iIDX
     global fTrain
+    global fLog
     global iGenCount
     fTrain = open(strTrainingFilename)
     
@@ -165,7 +169,9 @@ def generate_arrays_from_file2(path):
             iIDX = iIDX + 1
 #        print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
 #        print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+            fLog.write(line) 
         yield(rTrain, rResult)
+#        fTrain.seek(0)
 #                """zurückgeben: training array, result array"""
 #            fTrain.close()         
 
@@ -295,5 +301,6 @@ model.save(filepath)
 model.summary()
 #print(history.losses)
 ccb.stats()
+fLog.close()
 print('END')
 
