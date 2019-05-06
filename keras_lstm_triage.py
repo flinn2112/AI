@@ -20,6 +20,9 @@ from keras.losses import categorical_crossentropy
 from keras.losses import mean_squared_error
 from keras.callbacks import History 
 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
 import h5py
 #'training.xp.csv'
 strTrainingFilename   = 'training_data.csv'
@@ -30,10 +33,10 @@ iDataElementCount     = 43
 iResultElementCount   =  5
 momentum              = 0.09
 iGenCount             = 0
-iPatience             = 1000
-iBatchSize            = 20
-iEpochs               = 500
-iStepsPerEpoch        = 1
+iPatience             = 100 
+iEpochs               = 900
+iStepsPerEpoch        = 10
+iBulkSize             = int(2000 / iStepsPerEpoch)
 fTrain = open(strTrainingFilename) 
 fLog   = open('log.txt', "w")
 
@@ -42,7 +45,7 @@ keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, w
 optSGD = optimizers.SGD(lr=0.0001, decay=1e-5, momentum=0.8, nesterov=True )
 optAdam = keras.optimizers.Adam(lr=0.0001)
 optRmsProp = RMSprop(lr=0.0001)
-currentOptimizer = optAdam
+currentOptimizer = optRmsProp
 
 #gibt immer genau einen Datensatz aus dem File zurück
 def generate_arrays_from_file(path):
@@ -118,6 +121,7 @@ def generate_arrays_from_file2(path):
     
     while True:
         iIDX = 0
+        strOut = ''
         iGenCount = iGenCount + 1
         if fTrain.closed:
                fTrain = open(strTrainingFilename)
@@ -128,13 +132,21 @@ def generate_arrays_from_file2(path):
         rResult    = np.zeros((iBatchSize, iResultElementCount))
     #        rTrain     = np.zeros((100, iDataElementCount)) 
     #        rResult    = np.zeros((100, iResultElementCount))
-        for x in range(iBatchSize): 
+        for x in range(iBulkSize): 
             line = fTrain.readline()
+            strMsg = 'No line at #' + str(iIDX)
+            if not line:
+#                raise Exception(strMsg)
+                fTrain = open(strTrainingFilename)
+                line = fTrain.readline()
+                iIDX = 0
+            
             if line:
                 p = re.compile('\s')
                 p.sub('', line)
                 datas = np.fromstring(line, dtype=float, sep=' ')
                 lst = line.split(' ')
+                np.random.shuffle(rTrain)
                 lst.pop()
                 lst = lst[0:iDataElementCount]
                 lst.append(lst)
@@ -165,12 +177,16 @@ def generate_arrays_from_file2(path):
             #    rResult[0] = datas[iDataElementCount:]
             else:
                 print('NO DATA at #', iIDX) 
+                
                 iIDX = 0
             iIDX = iIDX + 1
 #        print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
 #        print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
-            fLog.write(line) 
+            strOut = str(iIDX) + '#'  + line
+            fLog.write(strOut)
+        
         yield(rTrain, rResult)
+
 #        fTrain.seek(0)
 #                """zurückgeben: training array, result array"""
 #            fTrain.close()         
@@ -221,7 +237,7 @@ class custom_callbacks(keras.callbacks.Callback):
         
     def on_epoch_begin(a, b, c):
         custom_callbacks.iNumEpochs = custom_callbacks.iNumEpochs + 1
-        print('#', a, ' on_epoch_begin')  
+        print('#', b, ' on_epoch_begin')  
 #        sys.exit()
         pass
 
@@ -302,5 +318,12 @@ model.summary()
 #print(history.losses)
 ccb.stats()
 fLog.close()
+
+
+plt.plot(h.history['loss'])
+plt.plot(h.history['acc'])
+plt.legend(loc='best')
+plt.show()
+
 print('END')
 

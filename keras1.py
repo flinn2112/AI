@@ -17,6 +17,10 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
 import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+
 #veraltet, nur wenn die Gewichte gespeichert werden.
 filepath            = "weights.triage.hdf5"
 filepath            = "0lstm.triage.hdf5"
@@ -70,7 +74,7 @@ callbacks_list = [checkpoint]
 #Best(500 Epochs, Dense 8): 0.01 -> 72.46%
 #Overfitting: 0.001 -> 90.74%
 #!10 Dense -> 96.22%
-model.fit(X, Y, validation_split=0.001, epochs=900, batch_size=500, callbacks=callbacks_list, verbose=0)
+h = model.fit(X, Y, validation_split=0.001, epochs=900, batch_size=500, callbacks=callbacks_list, verbose=0)
 
 
 predictions = model.predict(X)
@@ -88,3 +92,8 @@ model.save(filepath)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 print(scores)
 model.summary()
+
+plt.plot(h.history['loss'])
+plt.plot(h.history['acc'])
+plt.legend(loc='best')
+plt.show()
