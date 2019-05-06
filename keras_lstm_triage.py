@@ -36,7 +36,7 @@ iGenCount             = 0
 iPatience             = 100 
 iEpochs               = 900
 iStepsPerEpoch        = 10
-iBulkSize             = int(2000 / iStepsPerEpoch)
+iBatchSize             = int(2000 / iStepsPerEpoch)
 fTrain = open(strTrainingFilename) 
 fLog   = open('log.txt', "w")
 
@@ -62,9 +62,7 @@ def generate_arrays_from_file(path):
         rDbg       = np.zeros((1, iDataElementCount))
         rTrain     = np.zeros((1, iDataElementCount)) 
         rResult    = np.zeros((1, iResultElementCount))
-    #        rTrain     = np.zeros((100, iDataElementCount)) 
-    #        rResult    = np.zeros((100, iResultElementCount))
-    #    for x in range(20):             
+    
              
              
         line = fTrain.readline()
@@ -77,38 +75,22 @@ def generate_arrays_from_file(path):
             lst = lst[0:iDataElementCount]
             lst.append(lst)
             
-        #         rTrain[iIDX] = lst.pop()
-#            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+        
             rTrain[0] = lst.pop()
             
 
             rRes = line.split(' ')
-#            print("rRes: ", rRes)
-#            rRes = rRes.pop()
             rRes = rRes[iDataElementCount:]
-#            rRes.append(rRes)
             rResult[0] = rRes
             
 #            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-            iIDX = iIDX + 1
-        #         rDbg = np.array(datas,dtype=float)
-        #             rDbg = np.append(rDbg, lst.pop())
-        #             rResult = np.insert(rResult, 0, datas[iResultElementCount:])
-        #             rTrain = tf.convert_to_tensor(rTrain)
-        #             print("DATA #:", iIDX, line)
-        #    rTrain = lst
-            
-        #    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
-        #    rTrain[0]  = datas[0:iDataElementCount]
-        #    rResult[0] = datas[iDataElementCount:]
+            iIDX = iIDX + 1        
         else:
             print('NO DATA') 
         print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
         print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
         
-        yield(rTrain, rResult)
-#                """zurückgeben: training array, result array"""
-#            fTrain.close()                   
+        yield(rTrain, rResult)        
         
 
 
@@ -117,22 +99,21 @@ def generate_arrays_from_file2(path):
     global fTrain
     global fLog
     global iGenCount
-    fTrain = open(strTrainingFilename)
+    fTrain = open(path)
     
     while True:
         iIDX = 0
         strOut = ''
         iGenCount = iGenCount + 1
         if fTrain.closed:
-               fTrain = open(strTrainingFilename)
-        print("Generator call #:", iGenCount)
+               fTrain = open(path)
+        print("Generator call #: ", iGenCount)
            
         rDbg       = np.zeros((1, iDataElementCount))
         rTrain     = np.zeros((iBatchSize, iDataElementCount)) 
         rResult    = np.zeros((iBatchSize, iResultElementCount))
-    #        rTrain     = np.zeros((100, iDataElementCount)) 
-    #        rResult    = np.zeros((100, iResultElementCount))
-        for x in range(iBulkSize): 
+    
+        for x in range(iBatchSize): 
             line = fTrain.readline()
             strMsg = 'No line at #' + str(iIDX)
             if not line:
@@ -150,46 +131,21 @@ def generate_arrays_from_file2(path):
                 lst.pop()
                 lst = lst[0:iDataElementCount]
                 lst.append(lst)
-                
-            #         rTrain[iIDX] = lst.pop()
-    #            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+           
                 rTrain[iIDX] = lst.pop()
-                
-    
                 rRes = line.split(' ')
-    #            print("rRes: ", rRes)
-    #            rRes = rRes.pop()
                 rRes = rRes[iDataElementCount:]
-    #            rRes.append(rRes)
-                rResult[iIDX] = rRes
-                
-    #            print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-                
-            #         rDbg = np.array(datas,dtype=float)
-            #             rDbg = np.append(rDbg, lst.pop())
-            #             rResult = np.insert(rResult, 0, datas[iResultElementCount:])
-            #             rTrain = tf.convert_to_tensor(rTrain)
-            #             print("DATA #:", iIDX, line)
-            #    rTrain = lst
-                
-            #    print('---DEBUG--->>>',np.shape(rDbg), rDbg, '<<<-----') 
-            #    rTrain[0]  = datas[0:iDataElementCount]
-            #    rResult[0] = datas[iDataElementCount:]
+                rResult[iIDX] = rRes    
             else:
-                print('NO DATA at #', iIDX) 
-                
+                print('NO DATA at #', iIDX)                 
                 iIDX = 0
             iIDX = iIDX + 1
-#        print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-#        print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
             strOut = str(iIDX) + '#'  + line
+#mit dem Log kann verglichen werden, ob wirklich passende Daten zurückgeliefert wurden            
             fLog.write(strOut)
         
         yield(rTrain, rResult)
 
-#        fTrain.seek(0)
-#                """zurückgeben: training array, result array"""
-#            fTrain.close()         
 
 
                 
