@@ -51,7 +51,7 @@ model = Sequential()
 model.add(Dense(12, input_dim=43, activation='relu'))
 model.add(Dense(10, activation='relu'))
 #der Ergebnisvektor hat 5 elemente
-model.add(Dense(5, activation='sigmoid'))
+model.add(Dense(5, activation='softmax'))
 
 #sgd = keras.optimizers.SGD(lr=0.01, clipvalue=0.5)
 #sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)

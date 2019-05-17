@@ -22,7 +22,7 @@ import h5py
 fWeights = "lstm_weights.triage.hdf5"
 #0 = model sync erzeugt
 #1 = async erzeugt 
-fModel   = "lstm.triage.hdf5"
+fModel   = "0lstm.triage.hdf5"
 # fix random seed for reproducibility
 seed = 7
 numpy.random.seed(seed)
@@ -44,7 +44,7 @@ print('Y Result Data: ', Y)
 #sys.exit(1)
 
 #model = Sequential()
-# load weights
+# load weights 
 #model.load_weights(fWeights)
 #1.9.29.3 das model wird komplett geladen
 

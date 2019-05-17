@@ -34,9 +34,11 @@ iResultElementCount   =  5
 momentum              = 0.09
 iGenCount             = 0
 iPatience             = 100 
-iEpochs               = 900
-iStepsPerEpoch        = 10
-iBatchSize             = int(2000 / iStepsPerEpoch)
+iEpochs               = 250
+iStepsPerEpoch        = 2000
+
+iBatchSize             = 2000
+#int(2000 / iStepsPerEpoch)
 fTrain = open(strTrainingFilename) 
 fLog   = open('log.txt', "w")
 
@@ -46,6 +48,15 @@ optSGD = optimizers.SGD(lr=0.0001, decay=1e-5, momentum=0.8, nesterov=True )
 optAdam = keras.optimizers.Adam(lr=0.0001)
 optRmsProp = RMSprop(lr=0.0001)
 currentOptimizer = optRmsProp
+ 
+#nur xp
+"""
+dataset = np.loadtxt(strTrainingFilename)
+X = dataset[:,0:43]
+print(X.shape) 
+#orginalwert war ,8
+Y = dataset[:,43:]
+"""
 
 #gibt immer genau einen Datensatz aus dem File zurück
 def generate_arrays_from_file(path):
@@ -62,7 +73,6 @@ def generate_arrays_from_file(path):
         rDbg       = np.zeros((1, iDataElementCount))
         rTrain     = np.zeros((1, iDataElementCount)) 
         rResult    = np.zeros((1, iResultElementCount))
-    
              
              
         line = fTrain.readline()
@@ -87,8 +97,8 @@ def generate_arrays_from_file(path):
             iIDX = iIDX + 1        
         else:
             print('NO DATA') 
-        print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
-        print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
+#        print('---TRAIN--->>>',np.shape(rTrain), rTrain, '<<<-----') 
+#        print('---RESULT-->>>',np.shape(rResult), rResult, '<<<-----') 
         
         yield(rTrain, rResult)        
         
@@ -99,54 +109,61 @@ def generate_arrays_from_file2(path):
     global fTrain
     global fLog
     global iGenCount
+    global X, Y
     fTrain = open(path)
     
     while True:
         iIDX = 0
         strOut = ''
         iGenCount = iGenCount + 1
-        if fTrain.closed:
-               fTrain = open(path)
+        
         print("Generator call #: ", iGenCount)
+        if fTrain.closed:
+            fTrain = open(path)
            
         rDbg       = np.zeros((1, iDataElementCount))
-        rTrain     = np.zeros((iBatchSize, iDataElementCount)) 
-        rResult    = np.zeros((iBatchSize, iResultElementCount))
+        rTrain     = np.zeros((1, iDataElementCount)) 
+        rResult    = np.zeros((1, iResultElementCount))
     
-        for x in range(iBatchSize): 
-            line = fTrain.readline()
-            strMsg = 'No line at #' + str(iIDX)
-            if not line:
-#                raise Exception(strMsg)
-                fTrain = open(strTrainingFilename)
-                line = fTrain.readline()
-                iIDX = 0
+#        for x in range(iBatchSize): 
+        line = fTrain.readline()
+        
+        strMsg = 'No line at #' + str(iIDX)
+        
+        
+        if line:
+            p = re.compile(r'\s$')
+            p.sub('', line)
+            datas = np.fromstring(line, dtype=float, sep=' ')
+#                print(datas)
+#                np.random.shuffle(datas)
+            lst = line.split(' ')
+            lst.pop()
+            lst = lst[0:iDataElementCount]
+            lst.append(lst)
+            rTrain[iIDX] = datas[0:iDataElementCount] 
+#                rTrain[iIDX] = lst.pop()
+#                rRes = line.split(' ')
+#                rRes = rRes[iDataElementCount:]
+#                rResult[iIDX] = rRes
+            rResult[iIDX] = datas[iDataElementCount:]
             
-            if line:
-                p = re.compile('\s')
-                p.sub('', line)
-                datas = np.fromstring(line, dtype=float, sep=' ')
-                lst = line.split(' ')
-                np.random.shuffle(rTrain)
-                lst.pop()
-                lst = lst[0:iDataElementCount]
-                lst.append(lst)
-           
-                rTrain[iIDX] = lst.pop()
-                rRes = line.split(' ')
-                rRes = rRes[iDataElementCount:]
-                rResult[iIDX] = rRes    
-            else:
-                print('NO DATA at #', iIDX)                 
-                iIDX = 0
-            iIDX = iIDX + 1
-            strOut = str(iIDX) + '#'  + line
+#                rResult[iIDX,] = np.append(rResult, datas[iDataElementCount:])
+            
+        else:
+            print('NO DATA at #', iIDX)                 
+            iIDX = 0
+        iIDX = iIDX + 1
+            
+        strOut = str(iIDX) + '#'  + str(rResult) + '\n'
 #mit dem Log kann verglichen werden, ob wirklich passende Daten zurückgeliefert wurden            
-            fLog.write(strOut)
+        fLog.write(strOut)
+        
+        print('---TRAIN--->>>', np.shape(rTrain), rTrain, '<<<-----') 
+#        print('---RESULT-->>>', np.shape(rResult), rResult, '<<<-----') 
         
         yield(rTrain, rResult)
-
-
+#        yield(X, Y)
 
                 
 def async_get_for_prediction(path):
@@ -190,14 +207,17 @@ class custom_callbacks(keras.callbacks.Callback):
 
     def on_batch_end(self, batch, logs={}):
         self.losses.append(logs.get('loss'))
+        print("BATCH END")
         
     def on_epoch_begin(a, b, c):
         custom_callbacks.iNumEpochs = custom_callbacks.iNumEpochs + 1
         print('#', b, ' on_epoch_begin')  
 #        sys.exit()
+        fTrain = open(strTrainingFilename)
         pass
 
     def on_epoch_end(a,b, c):
+        fTrain.close()
         pass    
     
     def stats(self):
@@ -207,7 +227,7 @@ ccb = custom_callbacks()
 model = Sequential()
 model.add(Dense(24, input_dim=iDataElementCount, activation='relu'))
 model.add(Dense(18, input_dim=iDataElementCount, activation='relu'))
-model.add(Dense(12, activation='relu'))
+model.add(Dense(10, activation='relu'))
 model.add(Dense(8, activation='sigmoid'))
 
 #der Ergebnisvektor hat 5 elemente
@@ -276,8 +296,8 @@ ccb.stats()
 fLog.close()
 
 
-plt.plot(h.history['loss'])
-plt.plot(h.history['acc'])
+plt.plot(h.history['loss'], label='loss')
+plt.plot(h.history['acc'], label='acc')
 plt.legend(loc='best')
 plt.show()
 
