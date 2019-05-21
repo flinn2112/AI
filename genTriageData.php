@@ -10,10 +10,7 @@
     define("__LEVEL4__", 4) ;
     define("__LEVEL5__", 4) ;
     
-    function _T($strID, $strDefault, $strLanguage){
-        
-        return $strDefault ;
-    }
+    
     /*
      * 2018 Generiere Testdatensätze f. Triage AI
      */
@@ -479,16 +476,29 @@
     }
     //nachträglich dazugekommen f. HTML Dialog.
     class MTSItem{
+        public static $arrayIDX = 0 ;
         public $ID       = "" ;
         public $text     = "" ;
         public $language = "" ;
         public $type     = "" ;
         
-        public function MTSItem($strID, $strText, $strType, $strLanguage){             
-             $this->ID       = $strID ;
-             $this->text     = $strText ;
-             $this->language = $strLanguage ;
-             $this->type     = $strType ;
+        
+        public function MTSItem($strID, $strText, $strLanguage, $strType){
+             
+             $this->ID        = $strID ;
+             $this->text      = $strText ;
+             $this->language  = $strLanguage ;
+             $this->type      = $strType ;
+             $this->iIDX      = MTSItem::$arrayIDX ;
+             MTSItem::$arrayIDX++ ;
+        }
+        
+        private function _T($strID, $strDefault, $strLanguage){        
+            return $strDefault ;
+        }
+        
+        public function getDisplayText(){
+              return  $this->_T($this->ID, $this->text, $this->language) ;
         }
     }
     //nachträglich - das ist erstmal doppelt
@@ -550,55 +560,128 @@
         private $m_rL4 = array() ; //Merkmale, für Level 4
         private $m_rL5 = array() ; //Merkmale, für Level 5
         
+        
+        //zweispaltige Tabelle
         public function asHtml(){
             $strData = "" ;
             //die hcc values, Alter usw.
-            print_r($this->m_rCustom) ;
-            foreach($this->m_rCustom as $oMTSItem){
-                    $strData = sprintf("%s%s<br/>", $strData,  $oMTSItem->ID) ;
-            } 
-           foreach($this->m_rL1 as $oMTSItem){
-                    $strData = sprintf("%s%s<br/>", $strData,  $oMTSItem->ID) ;
-            }
-            foreach($this->m_rL2 as $oMTSItem){
-                    $strData = sprintf("%s%s<br/>", $strData,  $oMTSItem->ID) ;
-            }
-            foreach($this->m_rL3 as $oMTSItem){
-                    $strData = sprintf("%s%s<br/>", $strData, $oMTSItem->ID) ;
-            }
-            foreach($this->m_rL4 as $oMTSItem){
-                    $strData = sprintf("%s%s<br/>", $strData, $oMTSItem->ID) ;
-            }            
+            //print_r($this->m_rCustom) ;
+            $strData = "<html><head><script src=\"triage_form.js\"></script><head>" ;
+            $strData = $strData. "<script>function update(strID, iIDX)\n{ var el = null ; \nvar iEnum = 0 ; \n".
+                    "\niEnum = 1 ; \ndo{ \n el = document.getElementById('MTS_' + iEnum) ; \niEnum++; alert(el.id) ;}\n while(el);\n        }</script>";
+            
+            $strData = $strData. "\n\n\n\n\n\n<!-- START MTS -->\n<table>" ;
+            
+              $strData = $strData. "<tr><td valign=\"top\"><fieldset style=\"text-align:left\">\n".
+                "<legend style=\"padding:7px;text-align:left\">Custom Attributes</legend>" ;  
+                //print_r($this->m_rCustom) ;
+                foreach($this->m_rCustom as $oMTSItem){
+                        //$strData = sprintf("%s%s<br/>", $strData,  $oMTSItem->ID) ;
+                  //      printf("TYPE: %s<br/>", $oMTSItem->type) ;
+                        $found = preg_match("/numc.*/i", $oMTSItem->type) ;
+                        if( 1 == $found ){
+                            $strData = $strData. sprintf("<input id=\"MTS_%s\" name=\"%s\" class=\"class_none\"  ".
+                                                        " type=\"input\" value=\"1\" onclick=\"javascript:enumValues('%s', %d)\" />\n", 
+                                                        $oMTSItem->iIDX, $oMTSItem->ID, $oMTSItem->ID, $oMTSItem->iIDX                        
+                                                    ) ;
+                        }else{
+                            $strData = $strData. sprintf("<input id=\"MTS_%s\" name=\"%s\" class=\"class_none\"  ".
+                                                        " type=\"checkbox\" value=\"1\" onclick=\"javascript:enumValues('%s', %d)\" />\n", 
+                                                        $oMTSItem->iIDX, $oMTSItem->ID, $oMTSItem->ID, $oMTSItem->iIDX                       
+                                                    ) ;
+                        } 
+                      
+                        
+                        $strData = $strData. sprintf("<label class=\"choice\" for=\"%s\">%s</label><br/>\n",
+                                $oMTSItem->ID,
+                                $oMTSItem->getDisplayText()
+                                ) ;
+                }
+            $strData = $strData. "</fieldset></td><td></td></tr>\n" ;
+            
+            
+            $strData = $strData. "<tr><td valign=\"top\"><fieldset style=\"text-align:left\">\n".
+                "<legend style=\"padding:7px;text-align:left\">Level 1 Attributes</legend>" ;  
+                foreach($this->m_rL1 as $oMTSItem){
+                        $strData = $strData. sprintf("<input id=\"MTS_%s\" name=\"%s\" class=\"class_none\" type=\"checkbox\" value=\"1\"".
+                                "  onclick=\"javascript:enumValues('%s', %d)\"/>\n", 
+                        $oMTSItem->iIDX, $oMTSItem->ID, $oMTSItem->ID, $oMTSItem->iIDX                     
+                        ) ;
+                        $strData = $strData. sprintf("<label class=\"choice\" for=\"%s\">%s</label><br/>\n",
+                                $oMTSItem->ID,
+                                $oMTSItem->getDisplayText()
+                                ) ;
+                        
+                }
+           
+                 
+            $strData = $strData. "</fieldset></td>\n" ;
+            
+            $strData = $strData. "<td valign=\"top\"><fieldset style=\"text-align:left\">\n".
+                "<legend style=\"padding:7px;text-align:left\">Level 2 Attributes</legend>" ;  
+                foreach($this->m_rL2 as $oMTSItem){
+                        $strData = $strData. sprintf("<input id=\"MTS_%s\" name=\"%s\" class=\"class_none\" type=\"checkbox\" value=\"1\"".
+                                " onclick=\"javascript:enumValues('%s', %d)\"/>\n", 
+                        $oMTSItem->iIDX, $oMTSItem->ID, $oMTSItem->ID, $oMTSItem->iIDX                        
+                        ) ;
+                        $strData = $strData. sprintf("<label class=\"choice\" for=\"%s\">%s</label><br/>\n",
+                                $oMTSItem->ID,
+                                $oMTSItem->getDisplayText()
+                                ) ;
+                }
+            //1.Block ENDE    
+            //2.Block    
+            $strData = $strData. "</fieldset></td></tr>\n" ;
+            
+            $strData = $strData.  "<tr><td valign=\"top\"><fieldset style=\"text-align:left\">\n".
+                "<legend style=\"padding:7px;text-align:left\">Level 3 Attributes</legend>" ;  
+                foreach($this->m_rL3 as $oMTSItem){
+                        $strData = $strData. sprintf("<input id=\"MTS_%s\" name=\"%s\" class=\"class_none\" type=\"checkbox\" value=\"1\"".
+                                " onclick=\"javascript:enumValues('%s', %d)\"/>\n", 
+                                $oMTSItem->iIDX, $oMTSItem->ID, $oMTSItem->ID, $oMTSItem->iIDX                        
+                        ) ;
+                        $strData = $strData. sprintf("<label class=\"choice\" for=\"%s\">%s</label><br/>\n",
+                                $oMTSItem->ID,
+                                $oMTSItem->getDisplayText()
+                                ) ;
+                }
+            $strData = $strData. "</fieldset></td>\n" ;
+            
+            $strData = $strData. "<td valign=\"top\"><fieldset style=\"text-align:left\">\n".
+                "<legend style=\"padding:7px;text-align:left\">Level 4 Attributes</legend>" ;  
+            
+                foreach($this->m_rL4 as $oMTSItem){
+                        $strData = $strData. sprintf("<input id=\"MTS_%s\" name=\"%s\" class=\"class_none\" type=\"checkbox\" value=\"1\"".
+                                " onclick=\"javascript:enumValues('%s', %d)\"/>\n", 
+                        $oMTSItem->iIDX, $oMTSItem->ID, $oMTSItem->ID, $oMTSItem->iIDX                        
+                        ) ;
+                        $strData = $strData. sprintf("<label class=\"choice\" for=\"%s\">%s</label><br/>\n",
+                                $oMTSItem->ID,
+                                $oMTSItem->getDisplayText()
+                                ) ;
+                }
+            $strData = $strData. "</fieldset></td></tr>\n" ;
+            //2.Block ENDE
+            //3.Block
+          
+            $strData = $strData. "</table>\n<!-- END MTS -->\n\n\n\n\n" ;
+            $strData = $strData. "\n</html>\n" ;
             return $strData ;
             
         }
             
         public function MTSAttributeDirectory($strLanguage){
             $this->language = $strLanguage ;
+            MTSItem::$arrayIDX = 0 ;
+            array_push($this->m_rL1, new MTSItem(self::AIRWAY_COMPROMISE, "Airway Compromise",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL1, new MTSItem(self::STRIDOR, "Stridor",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL1, new MTSItem(self::HYPOGLYCAEMIA, "Hypoglycaemia",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL1, new MTSItem(self::EXSANGUATING_HAEMORRHAGE, "Exsanguating Haemorrhage",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL1, new MTSItem(self::INADEQUATE_BREATHING, "Inadequate Breathing",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL1, new MTSItem(self::CURRENTLY_FITTING, "Currently Fitting",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL1, new MTSItem(self::UNRESPONSIVE_CHILD, "Unresponsive Child",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL1, new MTSItem(self::SHOCK, "Shock",  $this->language , "CHECKBOX"));                //8 = 37 -> 37 sind  im XLS(Google Docs)
         
-            array_push($this->m_rL4, new MTSItem(self::WARMTH, "Warmth","" , $this->language, "CHECKBOX")) ;            
-            array_push($this->m_rL4, new MTSItem(self::RECENT_PROBLEM, "Recent Problem","" , $this->language , "CHECKBOX")) ;
-            array_push($this->m_rL4, new MTSItem(self::LOCAL_INFLAMATION, "Local Inflamation", $this->language , "CHECKBOX")) ;
-            array_push($this->m_rL4, new MTSItem(self::RECENT_MILD_PAIN_OR_ITCH, "Recent Mild Pain or Itch" , $this->language , "CHECKBOX"));
-            array_push($this->m_rL4, new MTSItem(self::DEFORMITY, $this->language,"Deformity", "CHECKBOX"));          
-            array_push($this->m_rL4, new MTSItem(self::SWELLING, $this->language,"Swelling", "CHECKBOX"));  //6
-            
-            
-            
-            array_push($this->m_rL3, new MTSItem(self::OPEN_FRACTURE, "Open Fracture", $this->language , "CHECKBOX"));
-            array_push($this->m_rL3, new MTSItem(self::HISTORY_OF_UNCONSCIOUSNESS,"History of unconsciousness",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL3, new MTSItem(self::HOT_ADULT,"",  $this->language,"Hot Adult", "CHECKBOX"));
-            array_push($this->m_rL3, new MTSItem(self::LOW_SAO2,"",  $this->language,"Low SAO2", "CHECKBOX")); //
-            array_push($this->m_rL3, new MTSItem(self::NEW_NEUROLOGICAL_DEFICIT,"New Neurological Deficit",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL3, new MTSItem(self::UNSTOPPABLE_MINOR_HAEMORRAGE,"Minor Hamorrhage",  $this->language , "CHECKBOX"));
-
-            array_push($this->m_rL3, new MTSItem(self::WIDESPREAD_RASH,"Widespread Rash",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL3, new MTSItem(self::MODERATE_PAIN_OR_ITCH,"Moderate Pain or Itch",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL3, new MTSItem(self::SIGNIFICANT_HISTORY_OF_ALLERGY, "Significant History of Allergy",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL3, new MTSItem(self::GROSS_DEFORMITY,"Gross Deformity",  $this->language , "CHECKBOX"));                   //10 = 16
-        
-
-            
             array_push($this->m_rL2, new MTSItem(self::MARKED_TACHYCARDIA,"Marked Tachycardia",  $this->language , "CHECKBOX"));           
             array_push($this->m_rL2, new MTSItem(self::UNCONTROLLABLE_MAJOR_HAEMORRHAGE,"Uncontrollable Major Hamorrhage",  $this->language , "CHECKBOX"));
             array_push($this->m_rL2, new MTSItem(self::UNABLE_TO_TALK_IN_SENTENCES,"Unable to Talk in Sentences",  $this->language , "CHECKBOX"));
@@ -611,24 +694,33 @@
             array_push($this->m_rL2, new MTSItem(self::VERY_LOW_SAO2,"Very Low SAo2",  $this->language , "CHECKBOX"));
             array_push($this->m_rL2, new MTSItem(self::VERY_HOT_ADULT,"Very Hot Adult",  $this->language , "CHECKBOX"));
             array_push($this->m_rL2, new MTSItem(self::FACIAL_OEDEMA,"Facial Oedema",  $this->language , "CHECKBOX"));   
-            array_push($this->m_rL2, new MTSItem(self::OEDEMA_OF_THE_LONGUE,"Oedeam of the Longue",  $this->language , "CHECKBOX")); //13 = 29
+            array_push($this->m_rL2, new MTSItem(self::OEDEMA_OF_THE_LONGUE,"Oedema of the Longue",  $this->language , "CHECKBOX")); //13 = 29
             
+            array_push($this->m_rL3, new MTSItem(self::OPEN_FRACTURE, "Open Fracture", $this->language , "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::HISTORY_OF_UNCONSCIOUSNESS,"History of unconsciousness",  $this->language, "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::HOT_ADULT, "Hot Adult",  $this->language,"Hot Adult", "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::LOW_SAO2, "Low SAO2",  $this->language, "CHECKBOX")); //
+            array_push($this->m_rL3, new MTSItem(self::NEW_NEUROLOGICAL_DEFICIT,"New Neurological Deficit",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::UNSTOPPABLE_MINOR_HAEMORRAGE,"Minor Hamorrhage",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::WIDESPREAD_RASH,"Widespread Rash",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::MODERATE_PAIN_OR_ITCH,"Moderate Pain or Itch",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::SIGNIFICANT_HISTORY_OF_ALLERGY, "Significant History of Allergy",  $this->language , "CHECKBOX"));
+            array_push($this->m_rL3, new MTSItem(self::GROSS_DEFORMITY,"Gross Deformity",  $this->language , "CHECKBOX"));                   //10 = 16
             
-            array_push($this->m_rL1, new MTSItem(self::AIRWAY_COMPROMISE,"Airway Compromise",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL1, new MTSItem(self::STRIDOR,"Stridor",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL1, new MTSItem(self::HYPOGLYCAEMIA,"Hypoglycaemia",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL1, new MTSItem(self::EXSANGUATING_HAEMORRHAGE,"Exsanguating Haemorrhage",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL1, new MTSItem(self::INADEQUATE_BREATHING,"Inadequate Breathing",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL1, new MTSItem(self::CURRENTLY_FITTING, "Currently Fitting",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL1, new MTSItem(self::UNRESPONSIVE_CHILD,"Unresponsive Child",  $this->language , "CHECKBOX"));
-            array_push($this->m_rL1, new MTSItem(self::SHOCK,"Shock",  $this->language , "CHECKBOX"));                //8 = 37 -> 37 sind  im XLS(Google Docs)
+            array_push($this->m_rL4, new MTSItem(self::WARMTH, "Warmth","" , $this->language, "CHECKBOX")) ;
+            array_push($this->m_rL4, new MTSItem(self::RECENT_PROBLEM, "Recent Problem","" , $this->language , "CHECKBOX")) ;
+            array_push($this->m_rL4, new MTSItem(self::LOCAL_INFLAMATION, "Local Inflamation", $this->language , "CHECKBOX")) ;
+            array_push($this->m_rL4, new MTSItem(self::RECENT_MILD_PAIN_OR_ITCH,  "Recent Mild Pain or Itch" , $this->language , "CHECKBOX"));
+            array_push($this->m_rL4, new MTSItem(self::DEFORMITY,"Deformity", $this->language, "CHECKBOX"));          
+            array_push($this->m_rL4, new MTSItem(self::SWELLING, "Swelling", $this->language, "CHECKBOX"));  //6
+    
             
-            array_push($this->m_rCustom, new MTSItem(self::HCC_GENDER,"Gender",  $this->language , "RADIO3"));                      
+            array_push($this->m_rCustom, new MTSItem(self::HCC_GENDER, "Gender",  $this->language , "RADIO3"));                      
             array_push($this->m_rCustom, new MTSItem(self::HCC_UNCONSCIOUS,"Unconscious",  $this->language , "CHECKBOX"));                 
-            array_push($this->m_rCustom, new MTSItem(self::HCC_DAYTIME,"Daytime",  $this->language , "RADIO3"));                     
-            array_push($this->m_rCustom, new MTSItem(self::HCC_RECURRING,"Recurring",  $this->language , "CHECKBOX"));                   
-            array_push($this->m_rCustom, new MTSItem(self::HCC_PRIVATE_INSURANCE,"Private Insurance",  $this->language , "CHECKBOX"));           
-            array_push($this->m_rCustom, new MTSItem(self::HCC_AGE,"Age",  $this->language , "NUMC3"));         //6 = 43
+            array_push($this->m_rCustom, new MTSItem(self::HCC_DAYTIME, "Daytime",  $this->language , "RADIO3"));                     
+            array_push($this->m_rCustom, new MTSItem(self::HCC_RECURRING, "Recurring",  $this->language , "CHECKBOX"));                   
+            array_push($this->m_rCustom, new MTSItem(self::HCC_PRIVATE_INSURANCE, "Private Insurance",  $this->language , "CHECKBOX"));           
+            array_push($this->m_rCustom, new MTSItem(self::HCC_AGE, "Age", $this->language , "NUMC::3"));         //6 = 43
 
         }
     }
@@ -774,14 +866,12 @@
             return $oDir->asHtml() ;
         }
         
-        private function init(){
-            
+        private function init(){            
             $this->m_oT = new MTS_TEMPERATURE_VALUES() ;
             $this->m_oP = new MTS_PAIN_VALUES() ;
         }
         
-        private function make_seed()
-        {
+        private function make_seed(){
           list($usec, $sec) = explode(' ', microtime());
           return $sec + $usec * 1000000;
         }
@@ -793,12 +883,18 @@
         
         /*
          * 1.9.2.21
-         * Clear a level
+         * Clear a level in one row
          */
         private function clearLevel($rKeys, &$rTargetArray){
             foreach($rKeys as $key){
                     $rTargetArray[$key] = self::OFF ;
                     //printf("CLEARED %s VALUE IS NOW: %d<br>", $key, $rTargetArray[$key]) ;
+            }
+        }
+        //set all elements to ON in a level
+        private function setLevel($rKeys, &$rTargetArray){
+                foreach($rKeys as $key){
+                    $rTargetArray[$key] = self::ON ;
             }
         }
         
@@ -899,7 +995,7 @@
             //
             
             
-                $rRow[self::HCC_GENDER]                         = $this->random(0, self::ON)  ;
+                $rRow[self::HCC_GENDER]                         = $this->random(1, 3)  ; //0,1,2
                 $rRow[self::HCC_UNCONSCIOUS]                    = $this->random(0, self::ON) ;            
                 $rRow[self::HCC_PRIVATE_INSURANCE]              = $this->random(1, self::ON) ;
                 $rRow[self::HCC_AGE              ]              = $this->random(1, 110) ;
@@ -952,7 +1048,7 @@
         }
         
         
-        /*
+        /* CLASS MTS
          * Normal generieren, dann aber bestimmte Werte prüfen und ggf. hochsetzen
          */
         public function genUrgent($nRows){            
@@ -975,8 +1071,8 @@
                 //Wenn Alter > 13, dann kann HOT_CHILD nicht sein
                 //Wenn bewusstlos, dann kann Talking... nicht sein
                 if( self::ON == $rRow[self::HOT_CHILD] &&  self::ON == $rRow[self::VERY_HOT_ADULT] ){
-                   if( $rRow[self::HCC_AGE] >= 13 ){ //adult
-                       $rRow[self::HOT_CHILD] = self::OFF ; //zurücksetzen
+                   if( $rRow[self::HCC_AGE] >= 16 ){ //adult
+                       $rRow[self::HOT_CHILD]      = self::OFF ; //zurücksetzen
                    }else{
                        $rRow[self::VERY_HOT_ADULT] = self::OFF ;
                    }
@@ -991,9 +1087,76 @@
                 }
                 array_push($this->m_rData, $rRow) ;
             }            
-            return $rRow ;
+            
+        }
+        /*CLASS MTS
+         * 5/2019 Generieren eines Batches mit allen Altern und möglichst vielen mehrfach Attributen f. urgent
+         * Erweiterung: level als parameter: -> alle Level nach dem gesetzten auf ON
+         */
+        public function genTraining($rWhat, $nRows, $iLevel){
+            $iCount = 0 ;
+            printf("%s Count is %d<br>\n", __MEHTOD__, $iCount) ;
+            $iNumElementsSet = 0 ;
+            $iIdx = 0 ;
+            for($i=0;$i<$nRows;$i++){
+                $iCount = mt_rand(1, sizeof($rWhat)) ;
+                printf("%s ------>   generating row %d<br>\n", __MEHTOD__, $i) ;
+                $rRow = $this->genRandom($rWhat) ; //zunächst wird ein beliebiger Datensatz generiert, dann aufgepimpt: 
+                for($k=0;$k<$iCount; $k++){       
+                        $iIdx = mt_rand(1, sizeof($rWhat)) ; //das kann evt. mehrfach den gleichen Index treffen - macht erstmal nichts.
+                        //printf("Putting a 1 at %s<br>\n", $rRow[$iIdx]) ;
+                        $rRow[$rWhat[$iIdx]] = self::ON ;                        
+                }
+                
+                switch($iLevel){
+                    case 1:
+                        $this->setLevel($this->m_rL2, $rRow) ;
+                        $this->setLevel($this->m_rL3, $rRow) ;
+                        $this->setLevel($this->m_rL4, $rRow) ;
+                        break ;
+                    case 2:
+                        $this->setLevel($this->m_rL3, $rRow) ;
+                        $this->setLevel($this->m_rL4, $rRow) ;
+                        break ;
+                    case 3:
+                        $this->setLevel($this->m_rL4, $rRow) ;
+                        break ;
+                    default:
+                        break ;
+                     
+                }
+                
+                print_r($rRow) ;
+                array_push($this->m_rData, $rRow) ;
+                
+                $iNumElementsSet = 0 ;
+            }     
         }
         
+        //CLASS MTS
+        public function genTrainingExtra1($nRows){
+            $this->genTraining($this->m_rL1, $nRows, 1) ;
+            //alle anderen werden gesetzt, um lernen zu können, dass Level 1 immer Vorrang hat.
+        /*
+            $this->setLevel($this->m_rL1) ;
+            $this->setLevel($this->m_rL2) ;
+            $this->setLevel($this->m_rL3) ;
+            $this->setLevel($this->m_rL4) ;
+        */    
+        }
+                                                
+        //CLASS MTS
+        public function genTrainingExtra2($nRows){
+            $this->genTraining($this->m_rL2, $nRows, 2) ;
+        }
+        //CLASS MTS
+        public function genTrainingExtra3($nRows){
+            $this->genTraining($this->m_rL3, $nRows, 3) ;
+        }
+        //CLASS MTS
+        public function genTrainingExtra4($nRows){
+            $this->genTraining($this->m_rL4, $nRows, 4) ;
+        }
         
         /* Level 4
          * Normal generieren, dann aber bestimmte Werte prüfen und ggf. hochsetzen
@@ -1083,8 +1246,7 @@
             }
             
             for($i=0;$i<$nRows;$i++){
-                $rRow = $this->genRandom( ) ; //zunächst wird ein beliebiger Datensatz generiert, dann aufgepimpt:    
-                
+                $rRow = $this->genRandom( ) ; //zunächst wird ein beliebiger Datensatz generiert, dann aufgepimpt:                
                 //paar custom sachen einschränken.
                 $rRow[self::HCC_UNCONSCIOUS]                    = self::OFF ;            
                 $rRow[self::HCC_RECURRING              ]        = self::OFF ;         
@@ -1114,11 +1276,10 @@
             for($i=0;$i<$nRows;$i++){
                 //paar custom sachen einschränken.
                 $rRow[self::HCC_UNCONSCIOUS]                    = self::OFF ;            
-                $rRow[self::HCC_AGE              ]              = $this->random(1, 110) ;
+                $rRow[self::HCC_AGE              ]              = $this->random(1, 80) ;
                 $rRow[self::HCC_RECURRING              ]        = self::ON ;
-                $rRow[self::HCC_DAYTIME    ]                    = $this->random(2, 3) ; //nur mittag abends
-                
-                $rRow[self::HCC_GENDER]                         = $this->random(0, self::ON)  ;
+                $rRow[self::HCC_DAYTIME    ]                    = $this->random(2, 3) ; //nur mittag abends                
+                $rRow[self::HCC_GENDER]                         = $this->random(1, 3)  ;
                 $rRow[self::HCC_PRIVATE_INSURANCE]              = $this->random(1, self::ON) ;
                 
                 
@@ -1306,7 +1467,7 @@
                 }
                 
                 
-                printf("<br>Checking for Urgent ZEILE [%d]<br>", __LINE__) ;
+                //printf("<br>Checking for Urgent ZEILE [%d]<br>", __LINE__) ;
                 if($this->isUrgent($this->m_rRow)){   //Level1                 
                     $this->m_rRow['EINSTUFUNG'] = 1 ;
                     if( $this->m_DEBUG ){
@@ -1530,7 +1691,7 @@
     */            
                 $strOut = preg_replace("/,/", $cDelimiter, $strOut) ;  //z.B: Komma in Space
                 //$strOut = preg_replace("/0\./", ".", $strOut) ;  //aus 0.1 wird .1
-                printf("%s<br>", $strOut) ;
+                //printf("%s<br>", $strOut) ;
                 file_put_contents($strDataFilename, $strOut, FILE_APPEND) ;
                 //das Ergebnisfile wird aus der Einstufungsspalte erstellt.                
                 //$strOut = preg_replace("/#/", $cDelimiter, $strOut) ;
@@ -1540,7 +1701,7 @@
         }
         
     }
-   
+
     
     $oGen = new Gen() ;
     if(isset($_GET["EVAL"])){        
@@ -1557,6 +1718,9 @@
     }
     
     
+ 
+     
+         
     if(isset($_GET["MTS"])){
         $oGen = new MTS(isset($_GET["DEBUG"])) ;
         
@@ -1569,6 +1733,10 @@
             $oGen->generateBatch($nRows /  5, __LEVEL3__) ;        //20%  
             $oGen->generateBatch($nRows /  2, __LEVEL4__);         //50%
             $oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__);  //10%
+            $oGen->genTrainingExtra1(1000) ;
+            $oGen->genTrainingExtra2(1000) ;
+            $oGen->genTrainingExtra3(1000) ;
+            $oGen->genTrainingExtra4(1000) ;
   
         }
         $oGen->classify() ;
@@ -1583,7 +1751,10 @@
         $oGen->generateBatch($nRows /  5, __LEVEL3__) ;        //20%  
         $oGen->generateBatch($nRows /  2, __LEVEL4__);         //50%
         $oGen->generateBatch($nRows / 10, __HYPOCHONDRIAC__);  //10%
-        
+        $oGen->genTrainingExtra1(250) ;
+        $oGen->genTrainingExtra2(250) ;
+        $oGen->genTrainingExtra3(250) ;
+        $oGen->genTrainingExtra4(250) ;
         $oGen->classify() ;
         $oGen->toFile("test", " ", 1) ;
         

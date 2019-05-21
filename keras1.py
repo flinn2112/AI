@@ -48,8 +48,10 @@ print(Y)
 # create model
 model = Sequential()
 #dim war im Beispiel 8
-model.add(Dense(12, input_dim=43, activation='relu'))
-model.add(Dense(10, activation='relu'))
+model.add(Dense(32, input_dim=43, activation='relu'))
+model.add(Dense(24, activation='relu'))
+model.add(Dense(18, activation='sigmoid'))
+model.add(Dense(12, activation='relu'))
 #der Ergebnisvektor hat 5 elemente
 model.add(Dense(5, activation='softmax'))
 
