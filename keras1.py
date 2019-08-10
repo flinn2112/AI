@@ -6,7 +6,7 @@ Hi
 @author: frankkempf
 
 """
-
+import hcc_utils
 import sys
 import tensorflow as tf  
 from numpy import loadtxt, savetxt, reshape 
@@ -30,15 +30,21 @@ np.random.seed(7)
 # load pima indians dataset
 dataset = np.loadtxt("training_data.csv", delimiter=" ")
 
+x = hcc_utils.acmeTrainSetup()
+
+
+
 
 
 #result_dataset = np.loadtxt("training_result.csv", delimiter=" ")
 # split into input (X) and output (Y) variables
 #originalwert war 0:8
 X = dataset[:,0:43]
+#np.random.shuffle(X)
 print(X.shape) 
 #orginalwert war ,8
 Y = dataset[:,43:]
+#np.random.shuffle(Y)
 print(X)
 print(Y)
 
@@ -46,6 +52,8 @@ print(Y)
 
 
 # create model
+model = x.getModel(filepath)
+"""
 model = Sequential()
 #dim war im Beispiel 8
 model.add(Dense(32, input_dim=43, activation='relu'))
@@ -54,7 +62,7 @@ model.add(Dense(18, activation='sigmoid'))
 model.add(Dense(12, activation='relu'))
 #der Ergebnisvektor hat 5 elemente
 model.add(Dense(5, activation='softmax'))
-
+"""
 #sgd = keras.optimizers.SGD(lr=0.01, clipvalue=0.5)
 #sgd = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=None, decay=0.0)
 

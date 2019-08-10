@@ -8,6 +8,15 @@ Created on Wed Dec 26 12:54:23 2018
 import tensorflow as tf  
 from numpy import loadtxt, savetxt, reshape 
 import os
+
+
+import sys
+from keras.models import Model
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.callbacks import ModelCheckpoint
+from keras.models import load_model
+
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 def makeHey():
@@ -40,6 +49,33 @@ class acmeEnv:
     def savex(strPath, what, strFormat, cDelimiter, cNewLine):
         savetxt(strPath, what, fmt=strFormat, delimiter=cDelimiter, newline=cNewLine)
         
-        
+
 
     
+        
+# A class that would load from file or define a triage training model.
+class acmeTrainSetup:
+    m_model        = None
+    def __init(self, strModelfilename):
+        pass
+    def getModel(self, strModelfilename):
+        exists = os.path.isfile(strModelfilename)
+        if exists:
+            # load the model
+            self.m_model = load_model(strModelfilename)
+            print("Loaded Model from File: ", strModelfilename) 
+        else:
+            # 
+            print("Creating new Model") 
+            self.m_model = Sequential()
+            #dim war im Beispiel 8
+            self.m_model.add(Dense(32, input_dim=43, activation='relu'))
+            self.m_model.add(Dense(24, activation='relu'))
+            self.m_model.add(Dense(18, activation='sigmoid'))
+            self.m_model.add(Dense(12, activation='relu'))
+            #der Ergebnisvektor hat 5 elemente
+            self.m_model.add(Dense(5, activation='softmax'))
+        return self.m_model   
+            
+            
+            
